@@ -8,13 +8,17 @@ class pheromone:
         self.positions = []
         self.temps = []
         self.intens = []
+        self.types = []
         self.duree_de_vie = 10
-
 
     def ajoute(self, fourmi):
         self.positions.append((fourmi.x, fourmi.y))
         self.temps.append(time())
         self.intens.append(100)
+        self.type()
+
+    def types(self):
+        self.type.append()
 
     def intensite(self):
         t_calcul = time()
@@ -27,8 +31,9 @@ class pheromone:
         self.positions = self.positions[supp:]
         self.temps = self.temps[supp:]
         self.intens = self.intens[supp:]
-
         
+
+
 """
 class MonTimer:
     # Le constructeur avec comme arguments le délai et la fonction à répéter
