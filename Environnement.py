@@ -1,13 +1,19 @@
-class Environnent():
+import numpy as np
 
-    #__slots__
+class Environment():
 
-    def __init__(self, size):
-        self.size = size
-        self.grid = [[0 for i in range(size)] for j in range(size)]
-        self.fourmis = []
+
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.grid = np.zeros((height, width))
+        self.fourmis = np.array([])
 
     
     def addFourmi(self, fourmi):
         self.fourmis.append(fourmi)
         self.grid[fourmi.x][fourmi.y] = fourmi
+
+
+env = Environment(4, 2)
+print(env.grid)
