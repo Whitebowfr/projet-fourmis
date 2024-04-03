@@ -34,16 +34,27 @@ class Environment():
         if self.grid[y][x] > 255:
             self.grid[y][x] = 255
 
-    def blur(self, x, y):
-        pass
+    def spread_here(self, x, y):
+        value = 0
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if x+i >= 0 and x+i < self.width and y+j >= 0 and y+j < self.height:
+                    value += self.grid[y+j][x+i]
+        return value / 9
 
 
     def spread(self):
-        pass
+        grid_copy = []
+        for y in range(len(self.grid)):
+            grid_copy.append([])
+            for x in range(len(self.grid[y])):
+                self.grid[y][x] = self.spread_here(x, y)
+            
         
    
         
-
-env = Environment(15,15)
-env.pschittt(10, 10)
-print(env)
+if __name__ == "__main__":
+    env = Environment(15,15)
+    env.pschittt(10, 10)
+    env.spread()
+    print(env)
