@@ -1,30 +1,22 @@
 import numpy as np
+DECAY_RATE = 0.1
 
 class Environment():
 
 
     def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.grid = np.array([[0 for i in range(width)] for j in range(height)])
+        self.width = width - 1
+        self.height = height - 1
+        self.grid = np.array([[0.0 for _ in range(width)] for _ in range(height)])
         self.fourmis = []
 
     
     def addFourmi(self, fourmi):
         self.fourmis.append(fourmi)
-        self.grid[fourmi.x][fourmi.y] = fourmi
-        
-    def searchFourmi(self, x, y):
-        for fourmi in self.fourmis:
-            if fourmi.x == x and fourmi.y == y:
-                return True
-        return False
     
-    def decay(self):
-        for y in range(len(self.grid)):
-            for x in range(len(self.grid[y])):
-                if self.grid[y][x] > 0:
-                    self.grid[y][x] -= 1
+    def decay(self, deltaT):
+        self.grid -= DECAY_RATE * deltaT
+        self.grid = np.maximum(self.grid, 0)
 
     def __str__(self):
         return str(self.grid)
