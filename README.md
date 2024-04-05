@@ -2,4 +2,3 @@
 ## Instructions
 Use 
 > pip install taichi
-before launching
