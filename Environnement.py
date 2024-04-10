@@ -21,7 +21,7 @@ class Environment():
     def __str__(self):
         return str(self.grid)
     
-    def pschittt(self, x, y):
+    def add_pheromone(self, x, y, type = None):
         self.grid[y][x] += 200
         if self.grid[y][x] > 255:
             self.grid[y][x] = 255
