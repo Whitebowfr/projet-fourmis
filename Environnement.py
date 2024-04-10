@@ -1,8 +1,9 @@
 import numpy as np
 import taichi as ti
-DECAY_RATE = 0.05
+DECAY_RATE = 0.5
+SPREAD_RATE = 0.01
 
-ti.init(arch=ti.gpu)
+ti.init(arch=ti.vulkan)
 
 @ti.data_oriented
 class Environment():
@@ -10,11 +11,7 @@ class Environment():
         self.width = width - 1
         self.height = height - 1
         self.grid = ti.field(dtype=float, shape=(self.height, self.width))
-        self.fourmis = []
-
-    
-    def addFourmi(self, fourmi):
-        self.fourmis.append(fourmi)
+        self.grid_blurred = ti.field(dtype=float, shape=(self.height, self.width))
     
     @ti.kernel
     def decay(self, deltaT: float):
@@ -28,28 +25,41 @@ class Environment():
         self.grid[y][x] += 200
         if self.grid[y][x] > 255:
             self.grid[y][x] = 255
+    
+    @ti.kernel
+    def box_blur(self, deltaT: float):
+        for i, j in self.grid:
+            blurred_value = 0.0
+            count = 0
+            for dx in ti.static(range(-1, 2)):
+                for dy in ti.static(range(-1, 2)):
+                    if i + dx >= 0 and i + dx < self.height and j + dy >= 0 and j + dy < self.width:
+                        blurred_value += self.grid[i + dx, j + dy]
+                        count += 1
+            self.grid_blurred[i, j] = blurred_value / count
+        for i, j in self.grid:
+            self.grid[i, j] = self.grid_blurred[i, j] * (1 - SPREAD_RATE * deltaT)
 
-    def spread_here(self, x, y):
+if __name__ == "__main__":
+    env = Environment(15, 15)
+    env.pschittt(10, 10)
+    env.box_blur()
+    print(env)
+
+    
+
+    """@ti.func
+    def spread_here(self, x: int, y: int):
         value = 0
         for i in range(-1, 2):
             for j in range(-1, 2):
                 if x+i >= 0 and x+i < self.width and y+j >= 0 and y+j < self.height:
-                    value += self.grid[y+j][x+i]
+                    value += self.grid[y+j, x+i]
         return value / 9
 
-
-    def spread(self):
-        grid_copy = []
-        for y in range(len(self.grid)):
-            grid_copy.append([])
-            for x in range(len(self.grid[y])):
-                self.grid[y][x] = self.spread_here(x, y)
-            
-        
-   
-        
-if __name__ == "__main__":
-    env = Environment(15,15)
-    env.pschittt(10, 10)
-    env.spread()
-    print(env)
+    @ti.kernel
+    def spread(self, deltaT: float):
+        for x, y in self.grid :
+            self.grid_blurred[y, x] = self.spread_here(x, y)
+        for x,y in self.grid_blurred :
+            self.grid[y, x] = self.grid_blurred[y, x]"""
