@@ -2,8 +2,13 @@ from Environnement import Environment
 from fourmi import fourmi
 from Vectors import Vect2D
 from display import Display
+import taichi as ti
+import random
 import time
 
+ti.init(arch=ti.cpu)
+
+@ti.data_oriented
 class FourmiSim :
     def __init__(self, width, height) :
         self.env = Environment(width, height)
@@ -12,19 +17,25 @@ class FourmiSim :
         self.display.update_grid(self.env.grid, self.env.fourmis)
         self.init_fourmis()
         self.previous_update = time.time()
+        self.i = 0
 
     def init_fourmis(self) :
-        for _ in range(20) :
-            self.env.addFourmi(fourmi(Vect2D(self.size.x // 2, self.size.y // 2, randomPos=True)))
+        for _ in range(200) :
+            self.env.addFourmi(fourmi(ti.Vector([random.randint(0, self.size.x), random.randint(0, self.size.y)])))
 
     def update_game(self) :
         deltaT = time.time() - self.previous_update
         self.previous_update = time.time()
         self.env.decay(deltaT)
-        for ant in self.env.fourmis :
-            ant.update(self.env, deltaT)
+        self.updateFourmis(deltaT)
+        ti.sync()
         self.display.update_grid(self.env.grid, self.env.fourmis)
-        print("deltaT : ", deltaT)
+        self.i += 1
+    
+    @ti.kernel
+    def updateFourmis(self, deltaT:float) :
+        for ant in self.env.fourmis :
+            ant.update(self.env.grid, deltaT, self.i)
 
     def run(self) :
         while True :
@@ -35,6 +46,6 @@ class FourmiSim :
     
 
 if __name__ == "__main__" :
-    sim = FourmiSim(1000, 1000)
+    sim = FourmiSim(400, 400)
     sim.run()
             
