@@ -32,7 +32,7 @@ class Environment():
             for j in range(-1, 2):
                 if x+i >= 0 and x+i < self.width and y+j >= 0 and y+j < self.height:
                     value += self.grid[y+j][x+i]
-        return value / 9
+        return int(value / 9)
 
 
     def spread(self):
@@ -40,13 +40,26 @@ class Environment():
         for y in range(len(self.grid)):
             grid_copy.append([])
             for x in range(len(self.grid[y])):
-                self.grid[y][x] = self.spread_here(x, y)
-            
+                grid_copy[y].append(self.spread_here(x, y))
+        self.grid = grid_copy
         
-   
+    def affichage_debugging(self):
+        print("_" *3* len(self.grid[0]))
+        for y in range(len(self.grid)):
+            print("[", end="")
+            for x in range(len(self.grid[y])):
+                if self.grid[y][x] != 0:
+                    print(self.grid[y][x], end=",")
+                else:
+                    print("  ", end=",")
+            print("]\n")
+
+        print()
         
 if __name__ == "__main__":
     env = Environment(15,15)
     env.pschittt(10, 10)
     env.spread()
-    print(env)
+    env.affichage_debugging()
+    env.spread()
+    env.affichage_debugging()
