@@ -1,22 +1,25 @@
 import numpy as np
-DECAY_RATE = 0.1
+import taichi as ti
+DECAY_RATE = 0.05
 
+ti.init(arch=ti.gpu)
+
+@ti.data_oriented
 class Environment():
-
-
     def __init__(self, width, height):
         self.width = width - 1
         self.height = height - 1
-        self.grid = np.array([[0.0 for _ in range(width)] for _ in range(height)])
+        self.grid = ti.field(dtype=float, shape=(self.height, self.width))
         self.fourmis = []
 
     
     def addFourmi(self, fourmi):
         self.fourmis.append(fourmi)
     
-    def decay(self, deltaT):
-        self.grid -= DECAY_RATE * deltaT
-        self.grid = np.maximum(self.grid, 0)
+    @ti.kernel
+    def decay(self, deltaT: float):
+        for (i, j) in self.grid:
+            self.grid[i, j] *= 1 - DECAY_RATE * deltaT
 
     def __str__(self):
         return str(self.grid)
