@@ -44,3 +44,5 @@ if __name__ == '__main__' :
         app.update_window()
         a = np.random.randint(low=255, size=(100, 100, 3), dtype=np.uint8) # Original
         app.update_grid(a, [])
+        
+        
