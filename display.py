@@ -2,7 +2,7 @@ import tkinter as tk
 import time
 import numpy as np
 
-class main(tk.Tk) :
+class Display(tk.Tk) :
 
     def __init__(self, width, height) :
         super().__init__()
@@ -63,7 +63,7 @@ class main(tk.Tk) :
             self.update_window()
 
 if __name__ == '__main__' :
-    app = main(1000,1000)
+    app = Display(1000,1000)
     while True :
         a = np.random.randint(0, 255, (1000, 1000))
         app.update_grid(a, [])
