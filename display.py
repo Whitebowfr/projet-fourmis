@@ -38,9 +38,10 @@ class Display() :
             self.update_window()
 
 if __name__ == '__main__' :
-    app = Display(1000,1000)
-    fourmis = []
-    for _ in range(10) :
-        fourmis.append(fourmi(Vect2D(randomPos=True)))
-    a = np.random.random((1000,1000))
-    app.update_grid(a, fourmis)
+    app = main(1000,1000)
+    while True :
+        app.update_window()
+        a = np.random.randint(low=255, size=(100, 100, 3), dtype=np.uint8) # Original
+        app.update_grid(a, [])
+        
+        
