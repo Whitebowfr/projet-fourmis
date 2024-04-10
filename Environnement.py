@@ -3,14 +3,13 @@ DECAY_RATE = 0.1
 
 class Environment():
 
-
     def __init__(self, width, height):
         self.width = width - 1
         self.height = height - 1
         self.grid = np.array([[0.0 for _ in range(width)] for _ in range(height)])
         self.fourmis = []
 
-    
+
     def addFourmi(self, fourmi):
         self.fourmis.append(fourmi)
     

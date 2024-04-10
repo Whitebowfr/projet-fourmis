@@ -35,7 +35,9 @@ class Display_param(tk.Tk):
         self.lbl_message2.pack(side="top", anchor = "w")
 
         self.val_sens_offset_dist = tk.DoubleVar()
+        self.val_sens_offset_dist.set(45)
         self.sens_offset_dist = tk.Scale(self.left_zone, length=400, orient = 'horizontal', from_= 0, to = 100, resolution = 1, tickinterval=20, label='Valeur SENSOR OFFSET DISTANCE', variable= self.val_sens_offset_dist)
+                                         
         self.sens_offset_dist.pack(fill = 'x')
 
         self.val_sens_size = tk.DoubleVar()
