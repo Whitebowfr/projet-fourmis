@@ -1,7 +1,5 @@
 import time
 import numpy as np
-from fourmi import fourmi
-from Vectors import Vect2D
 import taichi as ti
 
 ti.init(arch=ti.vulkan)
