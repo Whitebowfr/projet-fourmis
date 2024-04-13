@@ -1,7 +1,7 @@
 import numpy as np
 import taichi as ti
 DECAY_RATE = 0.5
-SPREAD_RATE = 0.01
+SPREAD_RATE = 3
 
 ti.init(arch=ti.vulkan)
 
@@ -38,7 +38,7 @@ class Environment():
                         count += 1
             self.grid_blurred[i, j] = blurred_value / count
         for i, j in self.grid:
-            self.grid[i, j] = self.grid_blurred[i, j] * (1 - SPREAD_RATE * deltaT)
+            self.grid[i, j] = self.grid_blurred[i, j]
 
 if __name__ == "__main__":
     env = Environment(15, 15)
