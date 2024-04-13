@@ -1,0 +1,14 @@
+DECAY_RATE = 0.1
+SPREAD_RATE: int = 10
+
+SENSOR_OFFSET_DISTANCE: int = 20
+SENSOR_SIZE: int = 3
+SENSOR_ANGLE_RAD: float = 45 * 3.14 / 180
+
+TURN_SPEED: float = 500 * 3.14/180
+MOVE_SPEED: int = 150
+
+RANDOM_FACT: int = 5
+
+HOME_SIZE: int = 30
+FOOD_SIZE: int = 5

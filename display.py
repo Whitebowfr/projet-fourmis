@@ -7,10 +7,11 @@ ti.init(arch=ti.vulkan)
 
 @ti.data_oriented
 class Display() :
+    hide_markers = False
 
     def __init__(self, width, height, number_of_pheromones, home) :
-        self.width = width
-        self.height = height
+        self.width = ti.static(width)
+        self.height = ti.static(height)
         self.prev_time = time.time()
         self.grid = ti.field(dtype=float, shape=(self.height, self.width, number_of_pheromones))
         self.ants = []
@@ -22,15 +23,16 @@ class Display() :
         
     def update_window(self) :
         self.update_pixels()
-        self.update_ants()
-        self.update_food()
-        self.update_home()
+        #self.update_ants()
+        if not ti.static(self.hide_markers) :
+            self.update_food()
+            self.update_home()
         self.gui.set_image(self.color_buffer)
         self.gui.show()
 
     @ti.kernel
     def update_food(self) :
-        for i in self.food :
+        for i in range(self.food.shape[0]) :
             for x in range(-ant.FOOD_SIZE, ant.FOOD_SIZE) :
                 for y in range(-ant.FOOD_SIZE, ant.FOOD_SIZE) :
                     self.color_buffer[int(self.food[i] + ti.Vector([x, y]))] = ti.Vector([0, 1, 0])
@@ -58,7 +60,7 @@ class Display() :
     
     def update_grid(self, grid, ants, food, updateWindow = True) :
         self.grid = grid
-        self.ants = ants.positions
+        self.ants = ants
         self.food = food
         if updateWindow :
             self.update_window()
