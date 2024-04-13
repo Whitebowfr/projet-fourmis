@@ -1,10 +1,11 @@
 import taichi as ti
 
-SENSOR_OFFSET_DISTANCE = 2
+SENSOR_OFFSET_DISTANCE = 20
 SENSOR_SIZE = 3
 SENSOR_ANGLE_RAD = 45 * 3.14 / 180
-TURN_SPEED = 30
-MOVE_SPEED = 15
+TURN_SPEED = 3000 * 3.14/180
+MOVE_SPEED = 50
+RANDOM_FACT = 1
 
 ti.init(arch=ti.cpu)
 
@@ -38,7 +39,7 @@ class Ants :
         left_value = self.getSensorValue(i, SENSOR_ANGLE_RAD)
         right_value = self.getSensorValue(i, -SENSOR_ANGLE_RAD)
 
-        randomSteering = ti.random()
+        randomSteering = ti.random() * RANDOM_FACT
 
         if forward_value > left_value and forward_value > right_value :
             pass
