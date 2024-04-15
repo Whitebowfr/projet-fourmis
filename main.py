@@ -1,5 +1,5 @@
 from Environnement import Environment
-from fourmi import fourmi
+from fourmi import Fourmi
 from Vectors import Vect2D
 from display import Display
 import time
@@ -15,7 +15,7 @@ class FourmiSim :
 
     def init_fourmis(self) :
         for _ in range(20) :
-            self.env.addFourmi(fourmi(Vect2D(self.size.x // 2, self.size.y // 2, randomPos=True)))
+            self.env.addFourmi(Fourmi(Vect2D(self.size.x // 2, self.size.y // 2, randomPos=True)))
 
     def update_game(self) :
         deltaT = time.time() - self.previous_update

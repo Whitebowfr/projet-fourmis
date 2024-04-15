@@ -1,6 +1,6 @@
 from threading import Timer
 from time import *
-from les_fourmis import fourmi
+from fourmi import Fourmi
 
 class pheromone:
 
