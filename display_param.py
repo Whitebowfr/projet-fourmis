@@ -68,7 +68,8 @@ class Display_param(tk.Tk):
 
         print(f'offset : {self.SENSOR_OFFSET_DISTANCE}, size : {self.SENSOR_SIZE}, angle : {self.SENSOR_ANGLE_DEGREES}, turn : {self.TURN_SPEED}, move : {self.MOVE_SPEED}')
 
-
+    def display_canvas(self):
+        pass
 
 if __name__ == "__main__":
     app = Display_param()

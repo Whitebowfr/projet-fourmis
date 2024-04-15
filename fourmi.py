@@ -8,7 +8,7 @@ SENSOR_ANGLE_DEGREES = 45
 TURN_SPEED = 15
 MOVE_SPEED = 15
 
-class fourmi:
+class Fourmi:
 
     def __init__(self, pos: Vect2D):
         self.position = pos
