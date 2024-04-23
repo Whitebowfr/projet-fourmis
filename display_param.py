@@ -9,6 +9,9 @@ class Display_param(tk.Tk):
         self.resizable(height = False, width = False)
     
         self.img_fourmi = tk.PhotoImage(file="fourmi.png")
+        self.list_param = [2, 3, 45, 15, 15]
+        self.anc_val_sensor_offset = self.list_param[0]
+
         self.widgets_creation()
 
     def widgets_creation(self):
@@ -80,6 +83,8 @@ class Display_param(tk.Tk):
                 if new_list[i] != self.list_param[i]:
                     list_chgt.append(i)
         # print(f'offset : {self.SENSOR_OFFSET_DISTANCE}, size : {self.SENSOR_SIZE}, angle : {self.SENSOR_ANGLE_DEGREES}, turn : {self.TURN_SPEED}, move : {self.MOVE_SPEED}')
+        if 0 in list_chgt:
+            self.anc_val_sensor_offset = self.list_param[0]
         self.list_param = new_list
 
         return list_chgt
@@ -88,17 +93,20 @@ class Display_param(tk.Tk):
         list_chgt = self.recover('<Button-1>')
         self.canevas.create_image([400, 250], image=self.img_fourmi)
         
-        self.id_arc_av = self.canevas.create_arc([500, 157], [700, 357], extent=2*self.SENSOR_ANGLE_DEGREES, start= -self.SENSOR_ANGLE_DEGREES, fill='red')
-        self.id_arc_g = self.canevas.create_arc([500, 157], [700, 357], extent=2*self.SENSOR_ANGLE_DEGREES, start= 90-self.SENSOR_ANGLE_DEGREES, fill='red')
-        self.id_arc_d = self.canevas.create_arc([500, 157], [700, 357], extent=2*self.SENSOR_ANGLE_DEGREES, start = 270-self.SENSOR_ANGLE_DEGREES, fill='red')
+        self.id_arc_av = self.canevas.create_arc([500+self.SENSOR_OFFSET_DISTANCE, 157], [700+self.SENSOR_OFFSET_DISTANCE, 357], extent=2*self.SENSOR_ANGLE_DEGREES, start= -self.SENSOR_ANGLE_DEGREES, fill='red')
+        self.id_arc_g = self.canevas.create_arc([500, 157-self.SENSOR_OFFSET_DISTANCE], [700, 357-self.SENSOR_OFFSET_DISTANCE], extent=2*self.SENSOR_ANGLE_DEGREES, start= 90-self.SENSOR_ANGLE_DEGREES, fill='red')
+        self.id_arc_d = self.canevas.create_arc([500, 157+self.SENSOR_OFFSET_DISTANCE], [700, 357+self.SENSOR_OFFSET_DISTANCE], extent=2*self.SENSOR_ANGLE_DEGREES, start = 270-self.SENSOR_ANGLE_DEGREES, fill='red')
+
+        self.mv_arrow = self.canevas.create_line(10,10, 110,10, width=5, arrow='both')
+        self.turn_arrow = self.canevas.create_line(10,400, 55,495, 110,400, smooth='true', width=5, arrow='both')
 
     def refresh(self):
         list_chgt = self.recover('<Button-1>')
 
         if 0 in list_chgt:
-            self.canevas.itemconfigure(self.id_arc_av)
-            self.canevas.itemconfigure(self.id_arc_g)
-            self.canevas.itemconfigure(self.id_arc_d)
+            self.canevas.move(self.id_arc_av, self.SENSOR_OFFSET_DISTANCE-self.anc_val_sensor_offset, 0)
+            self.canevas.move(self.id_arc_g, 0, -(self.SENSOR_OFFSET_DISTANCE-self.anc_val_sensor_offset))
+            self.canevas.move(self.id_arc_d, 0, self.SENSOR_OFFSET_DISTANCE-self.anc_val_sensor_offset)
         if 1 in list_chgt:
             self.canevas.itemconfigure(self.id_arc_av)
             self.canevas.itemconfigure(self.id_arc_g)
