@@ -33,7 +33,7 @@ class Display_param(tk.Tk):
 
         self.button_verr = tk.Button(self.top_zone, text="Verrouiler les paramètres")
         self.button_verr.pack(side = tk.RIGHT)
-        self.button_verr.bind('<Button-1>', self.recover)
+        self.button_verr.bind('<Button-1>', self.end)
 
         self.lbl_message2 = tk.Label(self.left_zone, text = "Message 2 :", font='Helvetica 12 bold')
         self.lbl_message2.pack(side="top", anchor = "w")
@@ -70,7 +70,7 @@ class Display_param(tk.Tk):
         self.display_canvas()
         self.refresh()
 
-    def recover(self, event):
+    def recover(self):
         list_chgt = []
         self.SENSOR_OFFSET_DISTANCE = int(self.val_sens_offset_dist.get())
         self.SENSOR_SIZE = int(self.val_sens_size.get())
@@ -82,7 +82,6 @@ class Display_param(tk.Tk):
             for i in range(len(self.list_param)):
                 if new_list[i] != self.list_param[i]:
                     list_chgt.append(i)
-        # print(f'offset : {self.SENSOR_OFFSET_DISTANCE}, size : {self.SENSOR_SIZE}, angle : {self.SENSOR_ANGLE_DEGREES}, turn : {self.TURN_SPEED}, move : {self.MOVE_SPEED}')
         if 0 in list_chgt:
             self.anc_val_sensor_offset = self.list_param[0]
         self.list_param = new_list
@@ -90,7 +89,7 @@ class Display_param(tk.Tk):
         return list_chgt
 
     def display_canvas(self):
-        list_chgt = self.recover('<Button-1>')
+        list_chgt = self.recover()
         self.canevas.create_image([400, 250], image=self.img_fourmi)
         
         self.id_arc_av = self.canevas.create_arc([500+self.SENSOR_OFFSET_DISTANCE, 157], [700+self.SENSOR_OFFSET_DISTANCE, 357], extent=2*self.SENSOR_ANGLE_DEGREES, start= -self.SENSOR_ANGLE_DEGREES, fill='red')
@@ -101,7 +100,7 @@ class Display_param(tk.Tk):
         self.turn_arrow = self.canevas.create_line(10,400, 55,495, 110,400, smooth='true', width=5, arrow='both')
 
     def refresh(self):
-        list_chgt = self.recover('<Button-1>')
+        list_chgt = self.recover()
 
         if 0 in list_chgt:
             self.canevas.move(self.id_arc_av, self.SENSOR_OFFSET_DISTANCE-self.anc_val_sensor_offset, 0)
@@ -117,6 +116,11 @@ class Display_param(tk.Tk):
             self.canevas.itemconfigure(self.id_arc_d, extent=2*self.SENSOR_ANGLE_DEGREES, start=270-self.SENSOR_ANGLE_DEGREES)
 
         self.after(100, self.refresh)
+
+    def end(self, event):
+        self.recover()
+        print(f'offset : {self.SENSOR_OFFSET_DISTANCE}, size : {self.SENSOR_SIZE}, angle : {self.SENSOR_ANGLE_DEGREES}, turn : {self.TURN_SPEED}, move : {self.MOVE_SPEED}')
+        self.quit()
 
 if __name__ == "__main__":
     app = Display_param()
