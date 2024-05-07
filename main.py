@@ -15,7 +15,7 @@ class FourmiSim:
         self.display = Display(width, height, self.env.home)
 
         self.i = 0
-        self.updateFourmis(1e-5)
+        self.updateFourmis(0.1)
         ti.sync()
         self.display.update_grid(self.env.grid, self.ants.positions, self.env.food)
         ti.sync()

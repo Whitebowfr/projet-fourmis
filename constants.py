@@ -7,12 +7,13 @@ SENSOR_OFFSET_DISTANCE: int = 15
 SENSOR_SIZE: int = 5
 SENSOR_ANGLE_RAD: float = 45 * 3.14 / 180
 
-TURN_SPEED: float = 250 * 3.14/180
+TURN_SPEED: float = 150 * 3.14/180
 MOVE_SPEED: int = 150
-dssdds
-RANDOM_FACT: int = 5
+
+RANDOM_FACT: float = 1.5
 
 HOME_SIZE: int = 30
 FOOD_SIZE: int = 5
 
-HIDE_MARKERS: bool = Falsedfsf
+LOST_SPEED: float = 0.3
+HIDE_MARKERS: bool = False

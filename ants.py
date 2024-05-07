@@ -1,7 +1,7 @@
 import taichi as ti
 import constants
 
-ti.init(arch=ti.gpu)
+ti.init(arch=ti.vulkan)
 
 @ti.data_oriented
 class Ants :
@@ -13,6 +13,7 @@ class Ants :
         self.foodgrid = foodgrid
         self.home = home
         self.has_food = ti.field(dtype=bool, shape=self.n)
+        self.lol = ti.field(dtype=ti.f16, shape=self.n)
         self.place_ants_home()
 
     @ti.kernel
@@ -22,6 +23,7 @@ class Ants :
             radius = ti.sqrt(ti.random()) * (self.grid.shape[0] / 2)
             x = ti.f32(radius * ti.cos(angle) + self.grid.shape[0] / 2)
             y = ti.f32(radius * ti.sin(angle) + self.grid.shape[1] / 2)
+            self.lol[i] = 0
             self.positions[i] = ti.Vector([x, y])
             self.angles[i] = angle
 
@@ -36,6 +38,7 @@ class Ants :
     def update(self, deltaT: ti.f32):
         for i in range(ti.static(self.n)):
             self.update_fourmi(i, deltaT)
+            self.lol[i] = self.lol[i] + deltaT * constants.LOST_SPEED
 
     @ti.func
     def update_fourmi(self, i: int, deltaT: ti.f32):
@@ -51,36 +54,41 @@ class Ants :
 
         randomSteering = ti.random() * ti.static(constants.RANDOM_FACT)
 
-        if forward_value > left_value and forward_value > right_value :
-            pass
-        elif forward_value < left_value and forward_value < right_value :
-            self.angles[i] += (randomSteering - 0.5) * 2 * ti.static(constants.TURN_SPEED) * deltaT
-        elif left_value > right_value :
+        if left_value > right_value :
             self.angles[i] += randomSteering * ti.static(constants.TURN_SPEED) * deltaT
         elif right_value > left_value :
             self.angles[i] -= randomSteering * ti.static(constants.TURN_SPEED) * deltaT
+        elif forward_value >= right_value and forward_value >= left_value : 
+            self.angles[i] += (randomSteering - ti.static(constants.RANDOM_FACT) / 2) * 2 * ti.static(constants.TURN_SPEED) * deltaT
 
         direction = ti.Vector((ti.cos(self.angles[i]), ti.sin(self.angles[i])), dt=ti.f32)
         newPos = self.positions[i] + direction * deltaT * ti.static(constants.MOVE_SPEED)
 
         shape = self.grid.shape
         if newPos[0] < 0 or newPos[0] >= shape[0] or newPos[1] < 0 or newPos[1] >= shape[1] :
-            self.angles[i] = ti.f32(ti.random() * 2 * 3.14)
-            newPos[0] = min(shape[0], max(0, newPos[0]))
-            newPos[1] = min(shape[1], max(0, newPos[1]))
+            if newPos[0] < 0 :
+                newPos[0] = shape[0] - 1
+            elif newPos[0] >= shape[0] :
+                newPos[0] = 0
+            if newPos[1] < 0 :
+                newPos[1] = shape[1] - 1
+            elif newPos[1] >= shape[1] :
+                newPos[1] = 0
         else :
             previousTrail = self.grid[int(self.positions[i]), pheromone]
-            self.grid[int(self.positions[i]), pheromone] = max(1, previousTrail)
+            self.grid[int(self.positions[i]), pheromone] = min(1, previousTrail + ti.exp(-self.lol[i]))
 
         if ti.static(constants.NUMBER_OF_PHEROMONES) > 1:
             if self.isInRectangle(self.positions[i], self.home, ti.static(constants.HOME_SIZE)) and self.has_food[i]:
                 self.has_food[i] = False
                 self.angles[i] -= ti.f32(3.14)
+                self.lol[i] = 0
             if not self.has_food[i]:
                 for f in range(self.foodgrid.shape[0]) :
                     if self.isInRectangle(self.positions[i], self.foodgrid[f], ti.static(constants.FOOD_SIZE)) :
                         self.has_food[i] = True
                         self.angles[i] -= ti.f32(3.14)
+                        self.lol[i] = 0
 
         self.positions[i] = newPos
 
@@ -111,15 +119,23 @@ class Ants :
                 gridX = int(sensorPos[0] + offsetX)
                 gridY = int(sensorPos[1] + offsetY)
                 
-                if gridX >= 0 and gridX < self.grid.shape[0] and gridY >= 0 and gridY < self.grid.shape[1]:
-                    """if ti.static(constants.NUMBER_OF_PHEROMONES) > 1 :
-                        if self.has_food[i]:
-                            if self.isInRectangle(ti.Vector([gridX, gridY]), self.home, ti.static(constants.HOME_SIZE)) :
+                if gridX < 0 or gridX >= self.grid.shape[0] or gridY < 0 or gridY >= self.grid.shape[1]:
+                    if gridX < 0 :
+                        gridX = self.grid.shape[0] - 1
+                    elif gridX >= self.grid.shape[0] :
+                        gridX = 0
+                    if gridY < 0 :
+                        gridY = self.grid.shape[1] - 1
+                    elif gridY >= self.grid.shape[1] :
+                        gridY = 0
+                if ti.static(constants.NUMBER_OF_PHEROMONES) > 1 :
+                    if self.has_food[i]:
+                        if self.isInRectangle(ti.Vector([gridX, gridY]), self.home, ti.static(constants.HOME_SIZE)) :
+                            value += 1
+                    else :
+                        for k in range(self.foodgrid.shape[0]) :
+                            if self.isInRectangle(ti.Vector([gridX, gridY]), self.foodgrid[k], ti.static(constants.FOOD_SIZE)) :
                                 value += 1
-                        else :
-                            for k in range(self.foodgrid.shape[0]) :
-                                if self.isInRectangle(ti.Vector([gridX, gridY]), self.foodgrid[k], ti.static(constants.FOOD_SIZE)) :
-                                    value += 1"""
-                    value += self.grid[gridX, gridY, pheromone]
+                value += self.grid[gridX, gridY, pheromone]
         
         return value

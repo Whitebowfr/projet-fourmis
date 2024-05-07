@@ -1,7 +1,7 @@
 import taichi as ti
 import constants
 
-ti.init(arch=ti.gpu)
+ti.init(arch=ti.vulkan)
 
 @ti.data_oriented
 class Environment():    
@@ -43,6 +43,5 @@ class Environment():
 
 if __name__ == "__main__":
     env = Environment(15, 15)
-    env.pschittt(10, 10)
     env.box_blur()
     print(env)
