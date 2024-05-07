@@ -5,7 +5,7 @@ ti.init(arch=ti.vulkan)
 
 @ti.data_oriented
 class Ants :
-    def __init__(self, N, grid, home, foodgrid) :
+    def __init__(self, N, grid, home, foodgrid):
         self.n = ti.static(N)
         self.positions = ti.Vector.field(2, dtype=ti.f32, shape=self.n)
         self.angles = ti.field(dtype=ti.f32, shape=self.n)
@@ -14,7 +14,10 @@ class Ants :
         self.home = home
         self.has_food = ti.field(dtype=bool, shape=self.n)
         self.lol = ti.field(dtype=ti.f16, shape=self.n)
+        self.lol = ti.field(dtype=ti.f16, shape=self.n)
         self.place_ants_home()
+
+
 
     @ti.kernel
     def place_ants_random(self):
@@ -27,17 +30,21 @@ class Ants :
             self.positions[i] = ti.Vector([x, y])
             self.angles[i] = angle
 
+
+
     @ti.kernel
     def place_ants_home(self):
         for i in range(self.n):
             angle = ti.random() * 2 * 3.14
             self.positions[i] = self.home
             self.angles[i] = ti.f32(angle)
-    
+
+            self.lol[i] = 0
     @ti.kernel
     def update(self, deltaT: ti.f32):
         for i in range(ti.static(self.n)):
             self.update_fourmi(i, deltaT)
+            self.lol[i] = self.lol[i] + deltaT * constants.LOST_SPEED
             self.lol[i] = self.lol[i] + deltaT * constants.LOST_SPEED
 
     @ti.func
@@ -65,6 +72,7 @@ class Ants :
         newPos = self.positions[i] + direction * deltaT * ti.static(constants.MOVE_SPEED)
 
         shape = self.grid.shape
+
         if newPos[0] < 0 or newPos[0] >= shape[0] or newPos[1] < 0 or newPos[1] >= shape[1] :
             if newPos[0] < 0 :
                 newPos[0] = shape[0] - 1
@@ -77,17 +85,20 @@ class Ants :
         else :
             previousTrail = self.grid[int(self.positions[i]), pheromone]
             self.grid[int(self.positions[i]), pheromone] = min(1, previousTrail + ti.exp(-self.lol[i]))
+            self.grid[int(self.positions[i]), pheromone] = min(1, previousTrail + ti.exp(-self.lol[i]))
 
         if ti.static(constants.NUMBER_OF_PHEROMONES) > 1:
             if self.isInRectangle(self.positions[i], self.home, ti.static(constants.HOME_SIZE)) and self.has_food[i]:
                 self.has_food[i] = False
                 self.angles[i] -= ti.f32(3.14)
                 self.lol[i] = 0
+                self.lol[i] = 0
             if not self.has_food[i]:
                 for f in range(self.foodgrid.shape[0]) :
                     if self.isInRectangle(self.positions[i], self.foodgrid[f], ti.static(constants.FOOD_SIZE)) :
                         self.has_food[i] = True
                         self.angles[i] -= ti.f32(3.14)
+                        self.lol[i] = 0
                         self.lol[i] = 0
 
         self.positions[i] = newPos

@@ -8,7 +8,7 @@ import constants
 ti.init()
 
 class FourmiSim:
-    def __init__(self, width, height, N) :
+    def __init__(self, width, height, N):
         self.env = Environment(width, height)
         self.ants = Ants(N, self.env.grid, self.env.home, self.env.food)
         #ti.sync()
@@ -24,7 +24,7 @@ class FourmiSim:
         deltaT = time.time() - self.previous_update
         self.previous_update = time.time()
         self.env.decay(deltaT)
-        if self.i % ti.static(constants.SPREAD_RATE) == 0 :
+        if self.i % ti.static(constants.SPREAD_RATE) == 0:
             self.env.box_blur()
         self.updateFourmis(deltaT)
         self.display.update_grid(self.env.grid, self.ants.positions, self.env.food)
