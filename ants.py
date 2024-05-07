@@ -83,7 +83,6 @@ class Ants :
         else :
             previousTrail = self.grid[int(self.positions[i]), pheromone]
             self.grid[int(self.positions[i]), pheromone] = min(1, previousTrail + ti.exp(-self.lol[i]))
-            self.grid[int(self.positions[i]), pheromone] = min(1, previousTrail + ti.exp(-self.lol[i]))
 
         if ti.static(constants.NUMBER_OF_PHEROMONES) > 1:
             if self.isInRectangle(self.positions[i], self.home, ti.static(constants.HOME_SIZE)) and self.has_food[i]:
@@ -145,4 +144,6 @@ class Ants :
                                 value += 1
                 value += self.grid[gridX, gridY, pheromone]
         
+        if value < 0.01 :
+            value = 0.0
         return value
