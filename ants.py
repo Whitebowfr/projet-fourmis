@@ -5,7 +5,7 @@ ti.init(arch=ti.gpu)
 
 @ti.data_oriented
 class Ants :
-    def __init__(self, N, grid, home, foodgrid) :
+    def __init__(self, N, grid, home, foodgrid):
         self.n = ti.static(N)
         self.positions = ti.Vector.field(2, dtype=ti.f32, shape=self.n)
         self.angles = ti.field(dtype=ti.f32, shape=self.n)
@@ -13,7 +13,10 @@ class Ants :
         self.foodgrid = foodgrid
         self.home = home
         self.has_food = ti.field(dtype=bool, shape=self.n)
+        self.lol = ti.field(dtype=ti.f32, shape=self.n)
         self.place_ants_home()
+
+
 
     @ti.kernel
     def place_ants_random(self):
@@ -25,13 +28,16 @@ class Ants :
             self.positions[i] = ti.Vector([x, y])
             self.angles[i] = angle
 
+
+
     @ti.kernel
     def place_ants_home(self):
         for i in range(self.n):
             angle = ti.random() * 2 * 3.14
             self.positions[i] = self.home
             self.angles[i] = ti.f32(angle)
-    
+
+            self.lol[i] = 1
     @ti.kernel
     def update(self, deltaT: ti.f32):
         for i in range(ti.static(self.n)):
@@ -112,14 +118,14 @@ class Ants :
                 gridY = int(sensorPos[1] + offsetY)
                 
                 if gridX >= 0 and gridX < self.grid.shape[0] and gridY >= 0 and gridY < self.grid.shape[1]:
-                    """if ti.static(constants.NUMBER_OF_PHEROMONES) > 1 :
+                    if ti.static(constants.NUMBER_OF_PHEROMONES) > 1:
                         if self.has_food[i]:
                             if self.isInRectangle(ti.Vector([gridX, gridY]), self.home, ti.static(constants.HOME_SIZE)) :
                                 value += 1
                         else :
                             for k in range(self.foodgrid.shape[0]) :
                                 if self.isInRectangle(ti.Vector([gridX, gridY]), self.foodgrid[k], ti.static(constants.FOOD_SIZE)) :
-                                    value += 1"""
+                                    value += 1
                     value += self.grid[gridX, gridY, pheromone]
         
         return value

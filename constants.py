@@ -6,13 +6,13 @@ NUMBER_OF_PHEROMONES: int = 2
 SENSOR_OFFSET_DISTANCE: int = 15
 SENSOR_SIZE: int = 5
 SENSOR_ANGLE_RAD: float = 45 * 3.14 / 180
+LOST_SPEED: float = 1
 
 TURN_SPEED: float = 250 * 3.14/180
 MOVE_SPEED: int = 150
-dssdds
 RANDOM_FACT: int = 5
 
 HOME_SIZE: int = 30
 FOOD_SIZE: int = 5
 
-HIDE_MARKERS: bool = Falsedfsf
+HIDE_MARKERS: bool = False
