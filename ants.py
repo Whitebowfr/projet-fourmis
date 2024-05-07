@@ -14,7 +14,6 @@ class Ants :
         self.home = home
         self.has_food = ti.field(dtype=bool, shape=self.n)
         self.lol = ti.field(dtype=ti.f16, shape=self.n)
-        self.lol = ti.field(dtype=ti.f16, shape=self.n)
         self.place_ants_home()
 
 
@@ -38,13 +37,12 @@ class Ants :
             angle = ti.random() * 2 * 3.14
             self.positions[i] = self.home
             self.angles[i] = ti.f32(angle)
-
             self.lol[i] = 0
+
     @ti.kernel
     def update(self, deltaT: ti.f32):
         for i in range(ti.static(self.n)):
             self.update_fourmi(i, deltaT)
-            self.lol[i] = self.lol[i] + deltaT * constants.LOST_SPEED
             self.lol[i] = self.lol[i] + deltaT * constants.LOST_SPEED
 
     @ti.func
@@ -92,13 +90,11 @@ class Ants :
                 self.has_food[i] = False
                 self.angles[i] -= ti.f32(3.14)
                 self.lol[i] = 0
-                self.lol[i] = 0
             if not self.has_food[i]:
                 for f in range(self.foodgrid.shape[0]) :
                     if self.isInRectangle(self.positions[i], self.foodgrid[f], ti.static(constants.FOOD_SIZE)) :
                         self.has_food[i] = True
                         self.angles[i] -= ti.f32(3.14)
-                        self.lol[i] = 0
                         self.lol[i] = 0
 
         self.positions[i] = newPos
