@@ -13,7 +13,7 @@ class Ants :
         self.foodgrid = foodgrid
         self.home = home
         self.has_food = ti.field(dtype=bool, shape=self.n)
-        self.lol = ti.field(dtype=ti.f32, shape=self.n)
+        self.lol = ti.field(dtype=ti.f16, shape=self.n)
         self.place_ants_home()
 
 
@@ -37,11 +37,12 @@ class Ants :
             self.positions[i] = self.home
             self.angles[i] = ti.f32(angle)
 
-            self.lol[i] = 1
+            self.lol[i] = 0
     @ti.kernel
     def update(self, deltaT: ti.f32):
         for i in range(ti.static(self.n)):
             self.update_fourmi(i, deltaT)
+            self.lol[i] = self.lol[i] + deltaT * constants.LOST_SPEED
 
     @ti.func
     def update_fourmi(self, i: int, deltaT: ti.f32):
@@ -70,23 +71,26 @@ class Ants :
         newPos = self.positions[i] + direction * deltaT * ti.static(constants.MOVE_SPEED)
 
         shape = self.grid.shape
+
         if newPos[0] < 0 or newPos[0] >= shape[0] or newPos[1] < 0 or newPos[1] >= shape[1] :
             self.angles[i] = ti.f32(ti.random() * 2 * 3.14)
             newPos[0] = min(shape[0], max(0, newPos[0]))
             newPos[1] = min(shape[1], max(0, newPos[1]))
         else :
             previousTrail = self.grid[int(self.positions[i]), pheromone]
-            self.grid[int(self.positions[i]), pheromone] = max(1, previousTrail)
+            self.grid[int(self.positions[i]), pheromone] = min(1, previousTrail + ti.exp(-self.lol[i]))
 
         if ti.static(constants.NUMBER_OF_PHEROMONES) > 1:
             if self.isInRectangle(self.positions[i], self.home, ti.static(constants.HOME_SIZE)) and self.has_food[i]:
                 self.has_food[i] = False
                 self.angles[i] -= ti.f32(3.14)
+                self.lol[i] = 0
             if not self.has_food[i]:
                 for f in range(self.foodgrid.shape[0]) :
                     if self.isInRectangle(self.positions[i], self.foodgrid[f], ti.static(constants.FOOD_SIZE)) :
                         self.has_food[i] = True
                         self.angles[i] -= ti.f32(3.14)
+                        self.lol[i] = 0
 
         self.positions[i] = newPos
 
