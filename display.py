@@ -4,16 +4,16 @@ import taichi as ti
 import ants as ant
 import constants
 
-ti.init(arch=ti.vulkan)
+ti.init(arch=ti.gpu)
 
 @ti.data_oriented
 class Display() :
 
-    def __init__(self, width, height, number_of_pheromones, home) :
+    def __init__(self, width, height, home) :
         self.width = ti.static(width)
         self.height = ti.static(height)
         self.prev_time = time.time()
-        self.grid = ti.field(dtype=float, shape=(self.height, self.width, number_of_pheromones))
+        self.grid = ti.field(dtype=float, shape=(self.height, self.width, constants.NUMBER_OF_PHEROMONES))
         self.ants = []
         self.food = []
         self.res = (self.width, self.height)
@@ -24,7 +24,6 @@ class Display() :
     def update_window(self) :
         self.update_pixels()
         #self.update_ants()
-        
         if not ti.static(constants.HIDE_MARKERS) :
             self.update_food()
             self.update_home()
@@ -33,7 +32,7 @@ class Display() :
 
     @ti.kernel
     def update_food(self) :
-        for i in range(self.food.shape[0]) :
+        for i in range(self.food.shape[0]):
             for x in range(-constants.FOOD_SIZE, constants.FOOD_SIZE) :
                 for y in range(-constants.FOOD_SIZE, constants.FOOD_SIZE) :
                     self.color_buffer[int(self.food[i] + ti.Vector([x, y]))] = ti.Vector([0, 1, 0])
@@ -53,7 +52,7 @@ class Display() :
         for i, j in self.color_buffer :
             col = ti.Vector([0.0] * 3)
             for k in range(self.grid.shape[2]) :
-                if k == 0 :
+                if k == 1 :
                     col += ti.Vector([0.0, self.grid[i, j, k], 0.0])
                 else :
                     col += ti.Vector([self.grid[i, j, k] / 2] * 3)

@@ -1,18 +1,17 @@
 import taichi as ti
 import constants
 
-ti.init(arch=ti.vulkan)
+ti.init(arch=ti.gpu)
 
 @ti.data_oriented
 class Ants :
-    def __init__(self, N, grid, home, foodgrid, number_of_pheromones = 1) :
+    def __init__(self, N, grid, home, foodgrid) :
         self.n = ti.static(N)
         self.positions = ti.Vector.field(2, dtype=ti.f32, shape=self.n)
         self.angles = ti.field(dtype=ti.f32, shape=self.n)
         self.grid = grid
         self.foodgrid = foodgrid
         self.home = home
-        self.number_of_pheromones = number_of_pheromones
         self.has_food = ti.field(dtype=bool, shape=self.n)
         self.place_ants_home()
 
@@ -27,28 +26,28 @@ class Ants :
             self.angles[i] = angle
 
     @ti.kernel
-    def place_ants_home(self) :
-        for i in range(self.n) :
+    def place_ants_home(self):
+        for i in range(self.n):
             angle = ti.random() * 2 * 3.14
             self.positions[i] = self.home
             self.angles[i] = ti.f32(angle)
     
     @ti.kernel
-    def update(self, deltaT: ti.f32) :
-        for i in range(ti.static(self.n)) :
+    def update(self, deltaT: ti.f32):
+        for i in range(ti.static(self.n)):
             self.update_fourmi(i, deltaT)
 
     @ti.func
     def update_fourmi(self, i: int, deltaT: ti.f32):
         pheromone = 0
         phb = 0
-        if ti.static(self.number_of_pheromones) > 1 :
+        if ti.static(constants.NUMBER_OF_PHEROMONES) > 1:
             pheromone = 1 if self.has_food[i] else 0
             phb = abs(pheromone - 1)
         
         forward_value = self.getSensorValue(i, 0, phb)
-        left_value = self.getSensorValue(i, ti.static(constants.SENSOR_ANGLE_RAD), phb)
-        right_value = self.getSensorValue(i, -ti.static(constants.SENSOR_ANGLE_RAD), phb)
+        left_value = self.getSensorValue(i, ti.static(constants.SENSOR_ANGLE_RAD), phb) * 0.8
+        right_value = self.getSensorValue(i, -ti.static(constants.SENSOR_ANGLE_RAD), phb) * 0.8
 
         randomSteering = ti.random() * ti.static(constants.RANDOM_FACT)
 
@@ -73,15 +72,16 @@ class Ants :
             previousTrail = self.grid[int(self.positions[i]), pheromone]
             self.grid[int(self.positions[i]), pheromone] = max(1, previousTrail)
 
-        if ti.static(self.number_of_pheromones) > 1 :
-            if self.isInRectangle(self.positions[i], self.home, ti.static(constants.HOME_SIZE)) and self.has_food[i] :
+        if ti.static(constants.NUMBER_OF_PHEROMONES) > 1:
+            if self.isInRectangle(self.positions[i], self.home, ti.static(constants.HOME_SIZE)) and self.has_food[i]:
                 self.has_food[i] = False
                 self.angles[i] -= ti.f32(3.14)
-            if not self.has_food[i] :
+            if not self.has_food[i]:
                 for f in range(self.foodgrid.shape[0]) :
                     if self.isInRectangle(self.positions[i], self.foodgrid[f], ti.static(constants.FOOD_SIZE)) :
                         self.has_food[i] = True
                         self.angles[i] -= ti.f32(3.14)
+
         self.positions[i] = newPos
 
     @ti.func
@@ -99,7 +99,7 @@ class Ants :
 
     
     @ti.func
-    def getSensorValue(self, i: int, sensorAngleOffset: float, pheromone: int) -> int :
+    def getSensorValue(self, i: int, sensorAngleOffset: float, pheromone: int) -> float:
         sensorAngle = self.angles[i] + sensorAngleOffset
         sensorDir = ti.Vector([ti.cos(sensorAngle), ti.sin(sensorAngle)])
         sensorPos = self.positions[i] + sensorDir * ti.static(constants.SENSOR_OFFSET_DISTANCE)
@@ -112,14 +112,14 @@ class Ants :
                 gridY = int(sensorPos[1] + offsetY)
                 
                 if gridX >= 0 and gridX < self.grid.shape[0] and gridY >= 0 and gridY < self.grid.shape[1]:
-                    if ti.static(self.number_of_pheromones) > 1 :
-                        if self.has_food[i] :
+                    """if ti.static(constants.NUMBER_OF_PHEROMONES) > 1 :
+                        if self.has_food[i]:
                             if self.isInRectangle(ti.Vector([gridX, gridY]), self.home, ti.static(constants.HOME_SIZE)) :
                                 value += 1
                         else :
                             for k in range(self.foodgrid.shape[0]) :
                                 if self.isInRectangle(ti.Vector([gridX, gridY]), self.foodgrid[k], ti.static(constants.FOOD_SIZE)) :
-                                    value += 1
+                                    value += 1"""
                     value += self.grid[gridX, gridY, pheromone]
         
         return value

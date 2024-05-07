@@ -7,12 +7,13 @@ import constants
 
 ti.init()
 
-class FourmiSim :
+class FourmiSim:
     def __init__(self, width, height, N) :
         self.env = Environment(width, height)
         self.ants = Ants(N, self.env.grid, self.env.home, self.env.food)
         #ti.sync()
-        self.display = Display(width, height, 1, self.env.home)
+        self.display = Display(width, height, self.env.home)
+
         self.i = 0
         self.updateFourmis(1e-5)
         ti.sync()
@@ -32,6 +33,7 @@ class FourmiSim :
     def updateFourmis(self, deltaT:float) :
         self.ants.update(deltaT)
 
+
     def run(self) :
         self.previous_update = time.time()
         while True :
@@ -41,7 +43,7 @@ class FourmiSim :
         self.update_game()
     
 
-if __name__ == "__main__" :
+if __name__ == "__main__":
     sim = FourmiSim(700, 700, 1000)
     sim.run()
             

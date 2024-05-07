@@ -1,22 +1,22 @@
 import taichi as ti
 import constants
 
-ti.init(arch=ti.vulkan)
+ti.init(arch=ti.gpu)
 
 @ti.data_oriented
 class Environment():    
-    def __init__(self, width, height, number_of_pheromones = 1):
+    def __init__(self, width, height):
         self.width = width - 1
         self.height = height - 1
-        self.grid = ti.field(dtype=ti.f16, shape=(self.height, self.width, number_of_pheromones))
-        self.grid_blurred = ti.field(dtype=ti.f16, shape=(self.height, self.width, number_of_pheromones))
-        self.food = ti.Vector.field(2, dtype=ti.f32, shape=4)
+        self.grid = ti.field(dtype=ti.f16, shape=(self.height, self.width, constants.NUMBER_OF_PHEROMONES))
+        self.grid_blurred = ti.field(dtype=ti.f16, shape=(self.height, self.width, constants.NUMBER_OF_PHEROMONES))
+        self.food = ti.Vector.field(2, dtype=ti.f32, shape=1)
         self.home = ti.Vector([int(height//2), int(width//2)])
         self.init_food()
 
     @ti.kernel
-    def init_food(self) :
-        for i in range(ti.static(self.food.shape[0])) :
+    def init_food(self):
+        for i in range(ti.static(self.food.shape[0])):
             self.food[i] = ti.Vector((ti.random() * self.height, ti.random() * self.width))
     
     @ti.kernel
@@ -43,5 +43,6 @@ class Environment():
 
 if __name__ == "__main__":
     env = Environment(15, 15)
+    env.pschittt(10, 10)
     env.box_blur()
     print(env)
