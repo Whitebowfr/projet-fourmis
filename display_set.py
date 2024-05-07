@@ -1,4 +1,5 @@
 import tkinter as tk
+import numpy as np
 
 class Display_param(tk.Tk):
 
@@ -45,23 +46,23 @@ class Display_param(tk.Tk):
         self.sens_offset_dist.pack(fill = 'x')
 
         self.val_sens_size = tk.DoubleVar()
-        self.val_sens_size.set(3)
-        self.sens_size = tk.Scale(self.left_zone, orient = 'horizontal', from_= 0, to = 100, resolution = 1, tickinterval=20, label='Valeur SENSOR SIZE', variable= self.val_sens_size)
+        self.val_sens_size.set(45)
+        self.sens_size = tk.Scale(self.left_zone, orient = 'horizontal', from_= 5, to = 90, resolution = 1, tickinterval=10, label='Valeur SENSOR SIZE', variable= self.val_sens_size)
         self.sens_size.pack(fill = 'x')
 
         self.val_sens_angle = tk.DoubleVar()
         self.val_sens_angle.set(45)
-        self.sens_angle = tk.Scale(self.left_zone, orient = 'horizontal', from_= 5, to = 45, resolution = 1, tickinterval=5, label='Valeur SENSOR ANGLE', variable= self.val_sens_angle)
+        self.sens_angle = tk.Scale(self.left_zone, orient = 'horizontal', from_= 5, to = 90, resolution = 1, tickinterval=10, label='Valeur SENSOR ANGLE', variable= self.val_sens_angle)
         self.sens_angle.pack(fill = 'x')
 
         self.val_turn_spd = tk.DoubleVar()
-        self.val_turn_spd.set(15)
-        self.turn_spd = tk.Scale(self.left_zone, orient = 'horizontal', from_= 0, to = 100, resolution = 1, tickinterval=20, label='Valeur TURN SPEED', variable= self.val_turn_spd)
+        self.val_turn_spd.set(150)
+        self.turn_spd = tk.Scale(self.left_zone, orient = 'horizontal', from_= 10, to = 300, resolution = 1, tickinterval=20, label='Valeur TURN SPEED', variable= self.val_turn_spd)
         self.turn_spd.pack(fill = 'x')
 
         self.val_mv_spd = tk.DoubleVar()
-        self.val_mv_spd.set(15)
-        self.mv_spd = tk.Scale(self.left_zone, orient = 'horizontal', from_= 0, to = 100, resolution = 1, tickinterval=20, label='Valeur MOVE SPEED', variable= self.val_mv_spd)
+        self.val_mv_spd.set(150)
+        self.mv_spd = tk.Scale(self.left_zone, orient = 'horizontal', from_= 10, to = 300, resolution = 1, tickinterval=40, label='Valeur MOVE SPEED', variable= self.val_mv_spd)
         self.mv_spd.pack(fill = 'x')
 
         self.canevas = tk.Canvas(self, background='light blue', width=800 , height=500)
@@ -89,31 +90,31 @@ class Display_param(tk.Tk):
         return list_chgt
 
     def display_canvas(self):
-        list_chgt = self.recover()
+        self.recover()
         self.canevas.create_image([400, 250], image=self.img_fourmi)
         
-        self.id_arc_av = self.canevas.create_arc([500+self.SENSOR_OFFSET_DISTANCE, 157], [700+self.SENSOR_OFFSET_DISTANCE, 357], extent=2*self.SENSOR_ANGLE_DEGREES, start= -self.SENSOR_ANGLE_DEGREES, fill='red')
-        self.id_arc_g = self.canevas.create_arc([500, 157-self.SENSOR_OFFSET_DISTANCE], [700, 357-self.SENSOR_OFFSET_DISTANCE], extent=2*self.SENSOR_ANGLE_DEGREES, start= 90-self.SENSOR_ANGLE_DEGREES, fill='red')
-        self.id_arc_d = self.canevas.create_arc([500, 157+self.SENSOR_OFFSET_DISTANCE], [700, 357+self.SENSOR_OFFSET_DISTANCE], extent=2*self.SENSOR_ANGLE_DEGREES, start = 270-self.SENSOR_ANGLE_DEGREES, fill='red')
+        self.id_arc_av = self.canevas.create_arc([600-self.SENSOR_SIZE+self.SENSOR_OFFSET_DISTANCE, 257-self.SENSOR_SIZE], [600+self.SENSOR_SIZE+self.SENSOR_OFFSET_DISTANCE, 257+self.SENSOR_SIZE], extent=self.SENSOR_SIZE, start= -int(self.SENSOR_SIZE/2), fill='red')
+        self.id_arc_g = self.canevas.create_arc([600-self.SENSOR_SIZE, 257-self.SENSOR_SIZE-self.SENSOR_OFFSET_DISTANCE], [600+self.SENSOR_SIZE, 257+self.SENSOR_SIZE-self.SENSOR_OFFSET_DISTANCE], extent=self.SENSOR_SIZE, start= self.SENSOR_ANGLE_DEGREES-int(self.SENSOR_SIZE/2), fill='red')
+        self.id_arc_d = self.canevas.create_arc([600-self.SENSOR_SIZE, 257-self.SENSOR_SIZE+self.SENSOR_OFFSET_DISTANCE], [600+self.SENSOR_SIZE, 257+self.SENSOR_SIZE+self.SENSOR_OFFSET_DISTANCE], extent=-self.SENSOR_SIZE, start = -self.SENSOR_ANGLE_DEGREES+int(self.SENSOR_SIZE/2), fill='red')
 
-        self.mv_arrow = self.canevas.create_line(10,10, 110,10, width=5, arrow='both')
-        self.turn_arrow = self.canevas.create_line(10,400, 55,495, 110,400, smooth='true', width=5, arrow='both')
+        self.mv_arrow = self.canevas.create_line(400-self.MOVE_SPEED, 10, 400+self.MOVE_SPEED, 10, width=8, arrow='both')
+        self.turn_arrow = self.canevas.create_line(400-self.TURN_SPEED, 400, 400, 495, 400+self.TURN_SPEED, 400, smooth='true', width=8, arrow='both')
 
     def refresh(self):
         list_chgt = self.recover()
 
-        if 0 in list_chgt:
-            self.canevas.move(self.id_arc_av, self.SENSOR_OFFSET_DISTANCE-self.anc_val_sensor_offset, 0)
-            self.canevas.move(self.id_arc_g, 0, -(self.SENSOR_OFFSET_DISTANCE-self.anc_val_sensor_offset))
-            self.canevas.move(self.id_arc_d, 0, self.SENSOR_OFFSET_DISTANCE-self.anc_val_sensor_offset)
-        if 1 in list_chgt:
-            self.canevas.itemconfigure(self.id_arc_av)
-            self.canevas.itemconfigure(self.id_arc_g)
-            self.canevas.itemconfigure(self.id_arc_d)
-        if 2 in list_chgt:
-            self.canevas.itemconfigure(self.id_arc_av, extent=2*self.SENSOR_ANGLE_DEGREES, start=-self.SENSOR_ANGLE_DEGREES)
-            self.canevas.itemconfigure(self.id_arc_g, extent=2*self.SENSOR_ANGLE_DEGREES, start=90-self.SENSOR_ANGLE_DEGREES)
-            self.canevas.itemconfigure(self.id_arc_d, extent=2*self.SENSOR_ANGLE_DEGREES, start=270-self.SENSOR_ANGLE_DEGREES)
+        if 0 in list_chgt or 1 in list_chgt or 2 in list_chgt: 
+            self.canevas.itemconfigure(self.id_arc_av, extent=self.SENSOR_SIZE, start=-int(self.SENSOR_SIZE/2))
+            self.canevas.itemconfigure(self.id_arc_g, extent=self.SENSOR_SIZE, start=self.SENSOR_ANGLE_DEGREES-int(self.SENSOR_SIZE/2))
+            self.canevas.itemconfigure(self.id_arc_d, extent=-self.SENSOR_SIZE, start=-self.SENSOR_ANGLE_DEGREES+int(self.SENSOR_SIZE/2))
+            self.canevas.coords(self.id_arc_av, 600-self.SENSOR_SIZE+self.SENSOR_OFFSET_DISTANCE, 257-self.SENSOR_SIZE, 600+self.SENSOR_SIZE+self.SENSOR_OFFSET_DISTANCE, 257+self.SENSOR_SIZE)
+            self.canevas.coords(self.id_arc_g, 600-self.SENSOR_SIZE+int(self.SENSOR_OFFSET_DISTANCE*np.cos(np.pi*self.SENSOR_ANGLE_DEGREES/180)), 257-self.SENSOR_SIZE-self.SENSOR_OFFSET_DISTANCE-int(self.SENSOR_OFFSET_DISTANCE*np.sin(np.pi*self.SENSOR_ANGLE_DEGREES/180)), 600+self.SENSOR_SIZE+int(self.SENSOR_OFFSET_DISTANCE*np.cos(np.pi*self.SENSOR_ANGLE_DEGREES/180)), 257+self.SENSOR_SIZE-self.SENSOR_OFFSET_DISTANCE-int(self.SENSOR_OFFSET_DISTANCE*np.sin(np.pi*self.SENSOR_ANGLE_DEGREES/180)))
+            self.canevas.coords(self.id_arc_d, 600-self.SENSOR_SIZE+int(self.SENSOR_OFFSET_DISTANCE*np.cos(np.pi*self.SENSOR_ANGLE_DEGREES/180)), 257-self.SENSOR_SIZE+self.SENSOR_OFFSET_DISTANCE+int(self.SENSOR_OFFSET_DISTANCE*np.sin(np.pi*self.SENSOR_ANGLE_DEGREES/180)), 600+self.SENSOR_SIZE+int(self.SENSOR_OFFSET_DISTANCE*np.cos(np.pi*self.SENSOR_ANGLE_DEGREES/180)), 257+self.SENSOR_SIZE+self.SENSOR_OFFSET_DISTANCE+int(self.SENSOR_OFFSET_DISTANCE*np.sin(np.pi*self.SENSOR_ANGLE_DEGREES/180)))
+        if 3 in list_chgt :
+            self.canevas.coords(self.turn_arrow, 400-self.TURN_SPEED, 400, 400, 495, 400+self.TURN_SPEED, 400)
+        if 4 in list_chgt :
+            self.canevas.coords(self.mv_arrow, 400-self.MOVE_SPEED, 10, 400+self.MOVE_SPEED, 10)
+        
 
         self.after(100, self.refresh)
 
