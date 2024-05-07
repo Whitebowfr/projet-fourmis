@@ -10,7 +10,7 @@ class Environment():
         self.height = height - 1
         self.grid = ti.field(dtype=ti.f16, shape=(self.height, self.width, number_of_pheromones))
         self.grid_blurred = ti.field(dtype=ti.f16, shape=(self.height, self.width, number_of_pheromones))
-        self.food = ti.Vector.field(2, dtype=ti.f32, shape=1)
+        self.food = ti.Vector.field(2, dtype=ti.f32, shape=4)
         self.home = ti.Vector([int(height//2), int(width//2)])
         self.init_food()
 
@@ -43,6 +43,5 @@ class Environment():
 
 if __name__ == "__main__":
     env = Environment(15, 15)
-    env.pschittt(10, 10)
     env.box_blur()
     print(env)

@@ -13,7 +13,6 @@ class FourmiSim :
         self.ants = Ants(N, self.env.grid, self.env.home, self.env.food)
         #ti.sync()
         self.display = Display(width, height, 1, self.env.home)
-        self.display.hide_markers = True
         self.i = 0
         self.updateFourmis(1e-5)
         ti.sync()
