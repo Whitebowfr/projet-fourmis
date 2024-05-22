@@ -89,12 +89,15 @@ class Ants :
                 self.has_food[i] = False
                 self.angles[i] -= ti.f32(3.14)
                 self.lol[i] = 0
+                print('rentre à la maison')
+
             if not self.has_food[i]:
-                for f in range(self.foodgrid.shape[0]) :
+                for f in range(self.foodgrid.shape[0]):
                     if self.isInRectangle(self.positions[i], self.foodgrid[f], ti.static(constants.FOOD_SIZE)) :
                         self.has_food[i] = True
                         self.angles[i] -= ti.f32(3.14)
                         self.lol[i] = 0
+                        print("j'ai trouvé de la bouffe")
 
         self.positions[i] = newPos
 
