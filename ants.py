@@ -43,7 +43,7 @@ class Ants :
     def update(self, deltaT: ti.f32):
         for i in range(ti.static(self.n)):
             self.update_fourmi(i, deltaT)
-            self.lol[i] = self.lol[i] + deltaT * constants.LOST_SPEED
+            self.lol[i] = self.lol[i] + ti.f16(deltaT * constants.LOST_SPEED)
 
     @ti.func
     def update_fourmi(self, i: int, deltaT: ti.f32):
@@ -59,9 +59,9 @@ class Ants :
 
         randomSteering = ti.random() * ti.static(constants.RANDOM_FACT)
 
-        if left_value > right_value :
+        if left_value - right_value > constants.TRESHOLD :
             self.angles[i] += randomSteering * ti.static(constants.TURN_SPEED) * deltaT
-        elif right_value > left_value :
+        elif right_value - left_value > constants.TRESHOLD :
             self.angles[i] -= randomSteering * ti.static(constants.TURN_SPEED) * deltaT
         elif forward_value >= right_value and forward_value >= left_value : 
             self.angles[i] += (randomSteering - ti.static(constants.RANDOM_FACT) / 2) * 2 * ti.static(constants.TURN_SPEED) * deltaT
