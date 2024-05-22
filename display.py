@@ -33,7 +33,7 @@ class Display() :
 
     @ti.kernel
     def update_food(self) :
-        for i in range(self.food.shape[0]) :
+        for i in range(self.food.shape[0]):
             for x in range(-ti.static(constants.FOOD_SIZE), ti.static(constants.FOOD_SIZE)) :
                 for y in range(-ti.static(constants.FOOD_SIZE), ti.static(constants.FOOD_SIZE)) :
                     self.color_buffer[int(self.food[i] + ti.Vector([x, y]))] = ti.Vector([0, 255, 0, 255], dt=ti.u8)
@@ -50,14 +50,16 @@ class Display() :
     
     @ti.kernel            
     def update_pixels(self):
-        for i, j in self.color_buffer :
+        for i, j in self.color_buffer:
             col = ti.Vector([0, 0, 0, 0], dt=ti.u8)
-            for k in range(self.grid.shape[2]) :
+            for k in range(constants.NUMBER_OF_PHEROMONES):
                 if k != 0 :
-                    col += ti.Vector([0, ti.u8(self.grid[i, j, k] * 255), 0, 0], dt=ti.u8)
+                    col += ti.Vector([0, 0,ti.u8(self.grid[i, j, k] * 255), 0], dt=ti.u8)
                 else :
-                    col += ti.Vector([ti.u8(self.grid[i, j, k] * 255)] * 3 + [0], dt=ti.u8)
+                    col = ti.Vector([ti.u8(self.grid[i, j, k] * 255)] * 2 + [0,0], dt=ti.u8)
+
             self.color_buffer[i, j] = col
+
     
     def update_grid(self, grid, ants, food, updateWindow = True) :
         self.grid = grid
