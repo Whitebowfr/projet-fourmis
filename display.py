@@ -24,7 +24,7 @@ class Display() :
         
     def update_window(self) :
         self.update_pixels()
-        #self.update_ants()
+        self.update_ants()
         if not ti.static(constants.HIDE_MARKERS) :
             self.update_food()
             self.update_home()
