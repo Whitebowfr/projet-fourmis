@@ -17,4 +17,4 @@ FOOD_SIZE: int = 5
 
 HIDE_MARKERS: bool = False
 
-TRESHOLD: float = 0.05
+TRESHOLD: float = 0.1
