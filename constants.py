@@ -18,3 +18,5 @@ FOOD_SIZE: int = 5
 FOOD_COUNT: int = 10
 
 HIDE_MARKERS: bool = False
+
+TRESHOLD: float = 0.05
