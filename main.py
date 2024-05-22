@@ -36,7 +36,7 @@ class FourmiSim:
 
     def run(self) :
         self.previous_update = time.time()
-        while True :
+        while self.display.gui.running:
             self.update_game()
 
     def runStep(self):

@@ -43,7 +43,7 @@ class Ants :
     def update(self, deltaT: ti.f32):
         for i in range(ti.static(self.n)):
             self.update_fourmi(i, deltaT)
-            self.lol[i] = self.lol[i] + deltaT * constants.LOST_SPEED
+            self.lol[i] = self.lol[i] + ti.f16(deltaT * constants.LOST_SPEED)
 
     @ti.func
     def update_fourmi(self, i: int, deltaT: ti.f32):
