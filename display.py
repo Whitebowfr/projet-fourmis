@@ -33,10 +33,10 @@ class Display() :
 
     @ti.kernel
     def update_food(self) :
-        for i in range(self.food.shape[0]):
-            for x in range(-ti.static(constants.FOOD_SIZE), ti.static(constants.FOOD_SIZE)) :
-                for y in range(-ti.static(constants.FOOD_SIZE), ti.static(constants.FOOD_SIZE)) :
-                    self.color_buffer[int(self.food[i] + ti.Vector([x, y]))] = ti.Vector([0, 255, 0, 255], dt=ti.u8)
+        for x in range(self.food.shape[0]):
+            for y in range(self.food.shape[1]):
+                if self.food[x, y] != 0 :
+                    self.color_buffer[x, y] = ti.Vector([0, 255, 0, 255], dt=ti.u8 )
 
     @ti.kernel
     def update_home(self) :

@@ -10,14 +10,23 @@ class Environment():
         self.height = height - 1
         self.grid = ti.field(dtype=ti.f16, shape=(self.height, self.width, constants.NUMBER_OF_PHEROMONES))
         self.grid_blurred = ti.field(dtype=ti.f16, shape=(self.height, self.width, constants.NUMBER_OF_PHEROMONES))
-        self.food = ti.Vector.field(2, dtype=ti.f32, shape=constants.FOOD_COUNT)
+        self.food = ti.field(dtype=ti.f32, shape=(self.height, self.width))
         self.home = ti.Vector([int(height//2), int(width//2)])
         self.init_food()
 
     @ti.kernel
     def init_food(self):
-        for i in range(ti.static(self.food.shape[0])):
-            self.food[i] = ti.Vector((ti.random() * self.height, ti.random() * self.width))
+        for i in range(constants.FOOD_COUNT):
+            center = ti.Vector((ti.random() * self.height, ti.random() * self.width))
+            while ti.sqrt((self.home[0] - center[0])**2 + (self.home[1] - center[1])**2) < constants.FOOD_SIZE + constants.HOME_SIZE:
+                center = ti.Vector((ti.random() * self.height, ti.random() * self.width))
+            for x in range(-ti.static(constants.FOOD_SIZE), ti.static(constants.FOOD_SIZE)):
+                for y in range(-ti.static(constants.FOOD_SIZE), ti.static(constants.FOOD_SIZE)):
+
+                    if center[0] + x >= 0 and center[0] + x < self.height and center[1] + y >= 0 and center[1] + y < self.width:
+                        distance = ti.sqrt(x**2 + y**2)
+                        if distance < constants.FOOD_SIZE:
+                            self.food[int(center[0] + x), int(center[1] + y)] = ti.f32(1.0)
     
     @ti.kernel
     def decay(self, deltaT: ti.f16):
@@ -42,6 +51,4 @@ class Environment():
             self.grid[i, j, k] = self.grid_blurred[i, j, k]
 
 if __name__ == "__main__":
-    env = Environment(15, 15)
-    env.box_blur()
-    print(env)
+    pass
