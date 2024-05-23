@@ -14,7 +14,7 @@ MOVE_SPEED: int = 150
 RANDOM_FACT: int = 5
 
 HOME_SIZE: int = 30
-FOOD_SIZE: int = 5
+FOOD_SIZE: int = 50
 FOOD_COUNT: int = 10
 
 HIDE_MARKERS: bool = False

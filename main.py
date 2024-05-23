@@ -44,6 +44,6 @@ class FourmiSim:
     
 
 if __name__ == "__main__":
-    sim = FourmiSim(700, 700, 1000)
+    sim = FourmiSim(700, 700, 2000)
     sim.run()
             
