@@ -1,18 +1,23 @@
 import taichi as ti
 import constants
+from PIL import Image
+import numpy as np
 
 ti.init(arch=ti.vulkan)
 
 @ti.data_oriented
 class Environment():    
-    def __init__(self, width, height):
+    def __init__(self, width, height, prebuilt_path=None):
         self.width = width - 1
         self.height = height - 1
         self.grid = ti.field(dtype=ti.f16, shape=(self.height, self.width, constants.NUMBER_OF_PHEROMONES))
         self.grid_blurred = ti.field(dtype=ti.f16, shape=(self.height, self.width, constants.NUMBER_OF_PHEROMONES))
         self.food = ti.field(dtype=ti.f32, shape=(self.height, self.width))
         self.home = ti.Vector([int(height//2), int(width//2)])
-        self.init_food()
+        if prebuilt_path is None:
+            self.init_food()
+        else:
+            self.load_prebuilt(prebuilt_path)
 
     @ti.kernel
     def init_food(self):
@@ -22,12 +27,18 @@ class Environment():
                 center = ti.Vector((ti.random() * self.height, ti.random() * self.width))
             for x in range(-ti.static(constants.FOOD_SIZE), ti.static(constants.FOOD_SIZE)):
                 for y in range(-ti.static(constants.FOOD_SIZE), ti.static(constants.FOOD_SIZE)):
-
                     if center[0] + x >= 0 and center[0] + x < self.height and center[1] + y >= 0 and center[1] + y < self.width:
                         distance = ti.sqrt(x**2 + y**2)
                         if distance < constants.FOOD_SIZE:
                             self.food[int(center[0] + x), int(center[1] + y)] = ti.f32(1.0)
-    
+
+    def load_prebuilt(self, path):
+        image = ti.tools.imread(path)
+        image = ti.tools.imresize(image, self.width, self.height)
+        for i in range(self.height):
+            for j in range(self.width):
+                if not np.array_equal(image[i, j], np.array([0,0,0])):
+                    self.food[i, j] = 1.0
     @ti.kernel
     def decay(self, deltaT: ti.f16):
         for (i, j, k) in self.grid:
