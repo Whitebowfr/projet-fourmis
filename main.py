@@ -9,7 +9,7 @@ ti.init()
 
 class FourmiSim:
     def __init__(self, width, height, N):
-        self.env = Environment(width, height)
+        self.env = Environment(width, height, "./saved_images/output.png")
         self.ants = Ants(N, self.env.grid, self.env.home, self.env.food)
         #ti.sync()
         self.display = Display(width, height, self.env.home)
