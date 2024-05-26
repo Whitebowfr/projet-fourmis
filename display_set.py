@@ -7,7 +7,7 @@ class Display_param(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Paramétrage de la fourmi")
-        self.geometry("1200x550")
+        self.geometry("1600x600")
         self.resizable(height = False, width = False)
     
         self.img_fourmi = tk.PhotoImage(file="fourmi.png")
@@ -27,6 +27,11 @@ class Display_param(tk.Tk):
         self.left_zone['borderwidth'] = 2
         self.left_zone['relief'] = 'raised'
 
+        self.left_zone2 = tk.Frame(self)
+        self.left_zone2.pack(side='left')
+        self.left_zone2['borderwidth'] = 2
+        self.left_zone2['relief'] = 'raised'
+
         self.lbl_message = tk.Label(self.top_zone, text = "Gestion des paramètres pré-enregistré :", font='Helvetica 12 bold')
         self.lbl_message.pack(side = tk.LEFT)
 
@@ -38,14 +43,39 @@ class Display_param(tk.Tk):
         self.button_save.pack(side = tk.RIGHT)
         self.button_save.bind('<Button-1>', self.parameter_save)
 
+        self.val_random_fact = tk.DoubleVar()
+        self.val_random_fact.set(5)
+        self.random_fact = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 5, to = 100, resolution = 1, tickinterval=19, label='Valeur RANDOM FACT', variable= self.val_random_fact)                 
+        self.random_fact.pack(side ='bottom', fill = 'x')
+
+        self.val_number_pher = tk.DoubleVar()
+        self.val_number_pher.set(10)
+        self.number_pher = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 5, to = 100, resolution = 1, tickinterval=19, label='Valeur NUMBER OF PHEROMONES', variable= self.val_number_pher)                 
+        self.number_pher.pack(side ='bottom', fill = 'x')
+
+        self.val_food_count = tk.DoubleVar()
+        self.val_food_count.set(10)
+        self.food_count = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 5, to = 100, resolution = 1, tickinterval=19, label='Valeur FOOD COUNT', variable= self.val_food_count)                 
+        self.food_count.pack(side ='bottom', fill = 'x')
+
+        self.val_food_size = tk.DoubleVar()
+        self.val_food_size.set(10)
+        self.food_size = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 5, to = 100, resolution = 1, tickinterval=19, label='Valeur FOOD SIZE', variable= self.val_food_size)                 
+        self.food_size.pack(side ='bottom', fill = 'x')
+
+        self.val_home_size = tk.DoubleVar()
+        self.val_home_size.set(10)
+        self.home_size = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 5, to = 100, resolution = 1, tickinterval=19, label='Valeur HOME SIZE', variable= self.val_home_size)                 
+        self.home_size.pack(side ='bottom', fill = 'x')
+
         self.val_spread_rate = tk.DoubleVar()
         self.val_spread_rate.set(10)
-        self.spread_rate = tk.Scale(self.left_zone, length=400, orient = 'horizontal', from_= 0, to = 50, resolution = 1, tickinterval=10, label='Valeur spread RATE', variable= self.val_spread_rate)                 
+        self.spread_rate = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 0, to = 50, resolution = 1, tickinterval=10, label='Valeur SPREAD RATE', variable= self.val_spread_rate)                 
         self.spread_rate.pack(side ='bottom', fill = 'x')
 
         self.val_decay_rate = tk.DoubleVar()
         self.val_decay_rate.set(0.5)
-        self.decay_rate = tk.Scale(self.left_zone, length=400, orient = 'horizontal', from_= 0, to = 5, resolution = 0.25, tickinterval=1, label='Valeur DECAY RATE', variable= self.val_decay_rate)                 
+        self.decay_rate = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 0, to = 5, resolution = 0.25, tickinterval=1, label='Valeur DECAY RATE', variable= self.val_decay_rate)                 
         self.decay_rate.pack(side ='bottom', fill = 'x')
 
         self.val_sens_offset_dist = tk.DoubleVar()
@@ -62,6 +92,11 @@ class Display_param(tk.Tk):
         self.val_sens_angle.set(45)
         self.sens_angle = tk.Scale(self.left_zone, orient = 'horizontal', from_= 5, to = 90, resolution = 1, tickinterval=10, label='Valeur SENSOR ANGLE', variable= self.val_sens_angle)
         self.sens_angle.pack(side ='bottom', fill = 'x')
+
+        self.val_lost_spd = tk.DoubleVar()
+        self.val_lost_spd.set(0.3)
+        self.lost_spd = tk.Scale(self.left_zone, orient = 'horizontal', from_= 10, to = 300, resolution = 1, tickinterval=40, label='Valeur LOST SPEED', variable= self.val_lost_spd)
+        self.lost_spd.pack(side ='bottom', fill = 'x')
 
         self.val_turn_spd = tk.DoubleVar()
         self.val_turn_spd.set(150)
@@ -94,9 +129,15 @@ class Display_param(tk.Tk):
         self.SENSOR_ANGLE_DEGREES = int(self.val_sens_angle.get())
         self.TURN_SPEED = int(self.val_turn_spd.get())
         self.MOVE_SPEED = int(self.val_mv_spd.get())
-        self.SENSOR_DECAY_RATE = int(self.val_decay_rate.get())
-        self.SENSOR_SPREAD_RATE = int(self.val_spread_rate.get())
-        new_list = [self.SENSOR_OFFSET_DISTANCE, self.SENSOR_SIZE, self.SENSOR_ANGLE_DEGREES, self.TURN_SPEED, self.MOVE_SPEED, self.SENSOR_DECAY_RATE, self.SENSOR_SPREAD_RATE]
+        self.DECAY_RATE = int(self.val_decay_rate.get())
+        self.SPREAD_RATE = int(self.val_spread_rate.get())
+        self.HOME_SIZE = int(self.val_home_size.get())
+        self.FOOD_SIZE = int(self.val_food_size.get())
+        self.FOOD_COUNT = int(self.val_food_count.get())
+        self.NUMBER_PHER = int(self.val_number_pher.get())
+        self.LOST_SPEED = int(self.val_lost_spd.get())
+        self.RANDOM_FACT = int(self.val_random_fact.get())
+        new_list = [self.SENSOR_OFFSET_DISTANCE, self.SENSOR_SIZE, self.SENSOR_ANGLE_DEGREES, self.TURN_SPEED, self.MOVE_SPEED, self.DECAY_RATE, self.SPREAD_RATE, self.HOME_SIZE, self.FOOD_SIZE, self.FOOD_COUNT, self.NUMBER_PHER, self.LOST_SPEED, self.RANDOM_FACT]
         if self.list_param:
             for i in range(len(self.list_param)):
                 if new_list[i] != self.list_param[i]:
@@ -118,7 +159,7 @@ class Display_param(tk.Tk):
         self.mv_arrow = self.canevas.create_line(400-self.MOVE_SPEED, 10, 400+self.MOVE_SPEED, 10, width=8, arrow='both')
         self.turn_arrow = self.canevas.create_line(400-self.TURN_SPEED, 400, 400, 495, 400+self.TURN_SPEED, 400, smooth='true', width=8, arrow='both')
 
-        self.maison = self.canevas.create_rectangle([1000, 200],[1100, 300], fill='red')
+        self.home = self.canevas.create_rectangle(1050-self.HOME_SIZE, 250-self.HOME_SIZE,1050+self.HOME_SIZE, 250+self.HOME_SIZE, fill='red')
 
     def refresh(self):
         list_chgt = self.recover()
@@ -134,6 +175,9 @@ class Display_param(tk.Tk):
             self.canevas.coords(self.turn_arrow, 400-self.TURN_SPEED, 400, 400, 495, 400+self.TURN_SPEED, 400)
         if 4 in list_chgt :
             self.canevas.coords(self.mv_arrow, 400-self.MOVE_SPEED, 10, 400+self.MOVE_SPEED, 10)
+
+        if 7 in list_chgt:
+            self.canevas.coords(self.home, 1050-self.HOME_SIZE, 250-self.HOME_SIZE,1050+self.HOME_SIZE, 250+self.HOME_SIZE)
         
         self.after(100, self.refresh)
 
