@@ -11,6 +11,7 @@ class Display_param(tk.Tk):
         self.resizable(height = False, width = False)
     
         self.img_fourmi = tk.PhotoImage(file="fourmi.png")
+        self.img_fourmi2 = tk.PhotoImage(file="fourmi2.png")
         self.list_param = [2, 3, 45, 15, 15]
         self.anc_val_sensor_offset = self.list_param[0]
 
@@ -42,6 +43,14 @@ class Display_param(tk.Tk):
         self.button_save = tk.Button(self.top_zone, text="Enregistre les paramètres")
         self.button_save.pack(side = tk.RIGHT)
         self.button_save.bind('<Button-1>', self.parameter_save)
+
+        self.button_scro = tk.Button(self.top_zone, text="Défile l'affichage")
+        self.button_scro.pack(side ='right', anchor = "ne")
+        self.button_scro.bind('<Button-1>', self.scroll)
+
+        self.button_test = tk.Button(self.top_zone, text="Test")
+        self.button_test.pack(side ='right', anchor = "ne")
+        # self.button_test.bind('<Button-1>', self.blink)
 
         self.val_random_fact = tk.DoubleVar()
         self.val_random_fact.set(5)
@@ -75,7 +84,7 @@ class Display_param(tk.Tk):
 
         self.val_decay_rate = tk.DoubleVar()
         self.val_decay_rate.set(0.5)
-        self.decay_rate = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 0, to = 5, resolution = 0.25, tickinterval=1, label='Valeur DECAY RATE', variable= self.val_decay_rate)                 
+        self.decay_rate = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 0, to = 5, resolution = 0.1, tickinterval=1, label='Valeur DECAY RATE', variable= self.val_decay_rate)                 
         self.decay_rate.pack(side ='bottom', fill = 'x')
 
         self.val_sens_offset_dist = tk.DoubleVar()
@@ -117,10 +126,6 @@ class Display_param(tk.Tk):
         self.lbl_message2 = tk.Label(self.left_zone, text = "Réglages modifiables :", font='Helvetica 12 bold')
         self.lbl_message2.pack(side ='left', anchor = "nw")
         
-        self.button_scro = tk.Button(self.top_zone, text="Défile l'affichage")
-        self.button_scro.pack(side ='right', anchor = "ne")
-        self.button_scro.bind('<Button-1>', self.scroll)
-
         self.display_canvas()
         self.refresh()
 
@@ -161,10 +166,20 @@ class Display_param(tk.Tk):
         self.mv_arrow = self.canevas.create_line(350-self.MOVE_SPEED, 10, 350+self.MOVE_SPEED, 10, width=8, arrow='both')
         self.turn_arrow = self.canevas.create_line(350-self.TURN_SPEED, 550, 350, 595, 350+self.TURN_SPEED, 550, smooth='true', width=8, arrow='both')
 
-        self.home = self.canevas.create_rectangle(1050-self.HOME_SIZE, 300-self.HOME_SIZE,1050+self.HOME_SIZE, 300+self.HOME_SIZE, fill='red')
-
         self.lost_rect = self.canevas.create_rectangle(10, 400-200*self.LOST_SPEED, 30, 400, fill='red')
         self.cadre_lost_rect = self.canevas.create_rectangle(10, 200, 30, 400, width='2', outline='black')
+
+        self.home = self.canevas.create_rectangle(950-self.HOME_SIZE, 105-self.HOME_SIZE,950+self.HOME_SIZE, 105+self.HOME_SIZE, fill='red')
+        self.txt_home = self.canevas.create_text(950, 105, text='Home', fill='white', font='Times '+str(int(self.HOME_SIZE/2))+' bold')
+        self.food = self.canevas.create_rectangle(950-self.FOOD_SIZE, 310-self.FOOD_SIZE,950+self.FOOD_SIZE, 310+self.FOOD_SIZE, fill='green')
+        self.txt_food = self.canevas.create_text(950, 310, text='Food', fill='white', font='Times '+str(int(self.FOOD_SIZE/2))+' bold')
+
+        self.canevas.create_image([1300, 100], image=self.img_fourmi2)
+
+        self.decay_rect = self.canevas.create_rectangle(1195, 95, 1205, 105, fill='red', state='normal')
+        self.decay_blink = True
+        self.decay_dis = True
+        self.blink()        
 
     def refresh(self):
         list_chgt = self.recover()
@@ -184,9 +199,23 @@ class Display_param(tk.Tk):
             self.canevas.coords(self.lost_rect, 10, 400-200*self.LOST_SPEED, 30, 400)
             self.canevas.coords(self.cadre_lost_rect, 10, 200, 30, 400)
         if 8 in list_chgt:
-            self.canevas.coords(self.home, 1050-self.HOME_SIZE, 300-self.HOME_SIZE,1050+self.HOME_SIZE, 300+self.HOME_SIZE)
-        
+            self.canevas.coords(self.home, 950-self.HOME_SIZE, 105-self.HOME_SIZE,950+self.HOME_SIZE, 105+self.HOME_SIZE)
+            self.canevas.itemconfigure(self.txt_home,  font='Times '+str(int(self.HOME_SIZE/2))+' bold')
+        if 9 in list_chgt:
+            self.canevas.coords(self.food, 950-self.FOOD_SIZE, 310-self.FOOD_SIZE,950+self.FOOD_SIZE, 310+self.FOOD_SIZE)
+            self.canevas.itemconfigure(self.txt_food,  font='Times '+str(int(self.FOOD_SIZE/2))+' bold')
+
         self.after(100, self.refresh)
+
+    def blink(self):
+        if self.decay_blink:
+            if self.decay_dis :
+                self.canevas.itemconfigure(self.decay_rect, state='hidden')
+                self.decay_dis = False
+            else : 
+                self.canevas.itemconfigure(self.decay_rect, state='normal')
+                self.decay_dis = True
+            self.after(int(1000*self.DECAY_RATE), self.blink)
 
     def scroll(self, event):
         self.xscroll(0)
