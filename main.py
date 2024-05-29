@@ -9,7 +9,7 @@ ti.init()
 
 class FourmiSim:
     def __init__(self, width, height, N):
-        self.env = Environment(width, height, "./saved_images/output.png")
+        self.env = Environment(width, height)#"./saved_images/output.png"
         self.ants = Ants(N, self.env.grid, self.env.home, self.env.food)
         #ti.sync()
         self.display = Display(width, height, self.env.home)
@@ -20,7 +20,7 @@ class FourmiSim:
         self.display.update_grid(self.env.grid, self.ants.positions, self.env.food)
         ti.sync()
 
-    def update_game(self) :
+    def update_game(self):
         deltaT = time.time() - self.previous_update
         self.previous_update = time.time()
         self.env.decay(deltaT)
