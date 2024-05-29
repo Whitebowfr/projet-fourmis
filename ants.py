@@ -55,7 +55,7 @@ class Ants :
 
         food_near = False
 
-        for detection_range in range(5) :
+        for detection_range in range(constants.DETECTION_RANGE):
             for deg in range(0, 35):
                 coords = self.positions[i] + ti.Vector([ti.cos(self.angles[i] + (-1)**deg * 3.14 / 18) * detection_range, ti.sin(self.angles[i] + (-1)**deg * 3.14 / 18) * detection_range])
                 if int(coords[0]) >= 0 and int(coords[0]) < self.grid.shape[0] and int(coords[1]) >= 0 and int(coords[1]) < self.grid.shape[1] and self.foodgrid[int(coords[0]), int(coords[1])] != 0:
