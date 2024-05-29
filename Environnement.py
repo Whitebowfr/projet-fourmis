@@ -8,6 +8,7 @@ ti.init(arch=ti.vulkan)
 @ti.data_oriented
 class Environment():    
     def __init__(self, width, height, prebuilt_path=None):
+        #test
         self.width = width - 1
         self.height = height - 1
         self.path = prebuilt_path
