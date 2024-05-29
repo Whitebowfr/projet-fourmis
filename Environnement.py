@@ -16,10 +16,15 @@ class Environment():
         self.grid_blurred = ti.field(dtype=ti.f16, shape=(self.height, self.width, constants.NUMBER_OF_PHEROMONES))
         self.food = ti.field(dtype=ti.f32, shape=(self.height, self.width))
         self.home = ti.Vector([int(height//2), int(width//2)])
+        
         if self.path is None:
             self.init_food()
         else:
-            self.load_prebuilt()
+            image = ti.ndarray(dtype=ti.math.vec3, shape=(self.height, self.width))
+            tmp = ti.tools.imread(self.path)
+            tmp = ti.tools.imresize(tmp, self.width, self.height)
+            image.from_numpy(tmp)
+            self.load_prebuilt(image)
 
     @ti.kernel
     def init_food(self):
@@ -33,13 +38,11 @@ class Environment():
                         distance = ti.sqrt(x**2 + y**2)
                         if distance < constants.FOOD_SIZE:
                             self.food[int(center[0] + x), int(center[1] + y)] = ti.f32(1.0)
-    def load_prebuilt(self):
-        self.image = ti.tools.imread(self.path)
-        self.image = ti.tools.imresize(self.image, self.width, self.height)
-        for i in range(self.height):
-            for j in range(self.width):
-                if not np.array_equal(self.image[i, j], np.array([0, 0, 0])):
-                    self.food[i, j] = 1.0
+    @ti.kernel
+    def load_prebuilt(self, img: ti.types.ndarray(ti.math.vec3, 2)):
+        for i,j in img :
+            if img[i,j][0] == 0 and img[i,j][1] == 255 and img[i,j][2] == 0:
+                self.food[i,j] = 1.0
     @ti.kernel
     def decay(self, deltaT: ti.f16):
         for (i, j, k) in self.grid:
