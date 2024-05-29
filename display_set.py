@@ -54,17 +54,18 @@ class Display_param(tk.Tk):
 
         self.val_random_fact = tk.DoubleVar()
         self.val_random_fact.set(5)
-        self.random_fact = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 5, to = 100, resolution = 1, tickinterval=19, label='Valeur RANDOM FACT', variable= self.val_random_fact)                 
+        self.random_fact = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 0, to = 15, resolution = 1, tickinterval=3, label='Valeur RANDOM FACT', variable= self.val_random_fact)                 
         self.random_fact.pack(side ='bottom', fill = 'x')
 
-        self.val_number_pher = tk.DoubleVar()
+        # choix entre 1 et 2
+        """ self.val_number_pher = tk.DoubleVar()
         self.val_number_pher.set(10)
         self.number_pher = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 5, to = 100, resolution = 1, tickinterval=19, label='Valeur NUMBER OF PHEROMONES', variable= self.val_number_pher)                 
-        self.number_pher.pack(side ='bottom', fill = 'x')
+        self.number_pher.pack(side ='bottom', fill = 'x') """
 
         self.val_food_count = tk.DoubleVar()
-        self.val_food_count.set(10)
-        self.food_count = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 5, to = 100, resolution = 1, tickinterval=19, label='Valeur FOOD COUNT', variable= self.val_food_count)                 
+        self.val_food_count.set(12)
+        self.food_count = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 1, to = 10, resolution = 1, tickinterval=2, label='Valeur FOOD COUNT', variable= self.val_food_count)                 
         self.food_count.pack(side ='bottom', fill = 'x')
 
         self.val_food_size = tk.DoubleVar()
@@ -78,8 +79,8 @@ class Display_param(tk.Tk):
         self.home_size.pack(side ='bottom', fill = 'x')
 
         self.val_spread_rate = tk.DoubleVar()
-        self.val_spread_rate.set(10)
-        self.spread_rate = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 0, to = 50, resolution = 1, tickinterval=10, label='Valeur SPREAD RATE', variable= self.val_spread_rate)                 
+        self.val_spread_rate.set(1)
+        self.spread_rate = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 0, to = 5, resolution = 0.1, tickinterval=1, label='Valeur SPREAD RATE', variable= self.val_spread_rate)                 
         self.spread_rate.pack(side ='bottom', fill = 'x')
 
         self.val_decay_rate = tk.DoubleVar()
@@ -142,9 +143,9 @@ class Display_param(tk.Tk):
         self.HOME_SIZE = int(self.val_home_size.get())
         self.FOOD_SIZE = int(self.val_food_size.get())
         self.FOOD_COUNT = int(self.val_food_count.get())
-        self.NUMBER_PHER = int(self.val_number_pher.get())
+        # self.NUMBER_PHER = int(self.val_number_pher.get())
         self.RANDOM_FACT = int(self.val_random_fact.get())
-        new_list = [self.SENSOR_OFFSET_DISTANCE, self.SENSOR_SIZE, self.SENSOR_ANGLE_DEGREES, self.TURN_SPEED, self.MOVE_SPEED, self.LOST_SPEED, self.DECAY_RATE, self.SPREAD_RATE, self.HOME_SIZE, self.FOOD_SIZE, self.FOOD_COUNT, self.NUMBER_PHER, self.RANDOM_FACT]
+        new_list = [self.SENSOR_OFFSET_DISTANCE, self.SENSOR_SIZE, self.SENSOR_ANGLE_DEGREES, self.TURN_SPEED, self.MOVE_SPEED, self.LOST_SPEED, self.DECAY_RATE, self.SPREAD_RATE, self.HOME_SIZE, self.FOOD_SIZE, self.FOOD_COUNT, self.RANDOM_FACT]
         if self.list_param:
             for i in range(len(self.list_param)):
                 if new_list[i] != self.list_param[i]:
@@ -171,15 +172,22 @@ class Display_param(tk.Tk):
 
         self.home = self.canevas.create_rectangle(950-self.HOME_SIZE, 105-self.HOME_SIZE,950+self.HOME_SIZE, 105+self.HOME_SIZE, fill='red')
         self.txt_home = self.canevas.create_text(950, 105, text='Home', fill='white', font='Times '+str(int(self.HOME_SIZE/2))+' bold')
-        self.food = self.canevas.create_rectangle(950-self.FOOD_SIZE, 310-self.FOOD_SIZE,950+self.FOOD_SIZE, 310+self.FOOD_SIZE, fill='green')
+        self.food = self.canevas.create_oval(950-self.FOOD_SIZE, 310-self.FOOD_SIZE,950+self.FOOD_SIZE, 310+self.FOOD_SIZE, fill='green')
         self.txt_food = self.canevas.create_text(950, 310, text='Food', fill='white', font='Times '+str(int(self.FOOD_SIZE/2))+' bold')
 
         self.canevas.create_image([1300, 100], image=self.img_fourmi2)
 
         self.decay_rect = self.canevas.create_rectangle(1195, 95, 1205, 105, fill='red', state='normal')
-        self.decay_blink = True
         self.decay_dis = True
-        self.blink()        
+        self.blink() 
+        
+        self.list_rect_spread = [[0 for i in range(9)] for j in range(9)]
+        self.spread_blink() 
+        for y in range(len(self.area_spread)):
+            for x in range(len(self.area_spread[0])):
+                self.rect_spread = self.canevas.create_rectangle(1100+10*x , 55+10*y, 1100+10*(x+1), 55+10*(y+1), fill=self.color(self.area_spread[y][x]))
+                self.list_rect_spread[y][x]=self.rect_spread 
+
 
     def refresh(self):
         list_chgt = self.recover()
@@ -208,14 +216,46 @@ class Display_param(tk.Tk):
         self.after(100, self.refresh)
 
     def blink(self):
-        if self.decay_blink:
-            if self.decay_dis :
-                self.canevas.itemconfigure(self.decay_rect, state='hidden')
-                self.decay_dis = False
-            else : 
-                self.canevas.itemconfigure(self.decay_rect, state='normal')
-                self.decay_dis = True
-            self.after(int(1000*self.DECAY_RATE), self.blink)
+        if self.decay_dis :
+            self.canevas.itemconfigure(self.decay_rect, state='hidden')
+            self.decay_dis = False
+        else : 
+            self.canevas.itemconfigure(self.decay_rect, state='normal')
+            self.decay_dis = True
+        self.after(int(1000*self.DECAY_RATE), self.blink)
+
+    def color(self, value):
+        color_hexa='#'
+        value = int(value*128+127)
+        hexa = str(hex(value))[2:]
+        if len(hexa)==1:
+            hexa='0'+hexa
+        color_hexa+=hexa*3
+        return color_hexa
+
+    def spread_blink(self, i=-1):
+        if i<5 and i>=0: 
+            for y in range(1, 8):
+                for x in range(1, 8):
+                    if self.area_spread[y][x]!=0:
+                        value_spread = self.area_spread[y][x]/5
+                        self.area_spread[y][x]=value_spread
+                        self.area_spread[y][x-1]+=value_spread
+                        self.area_spread[y][x+1]+=value_spread
+                        self.area_spread[y-1][x]+=value_spread
+                        self.area_spread[y+1][x]+=value_spread
+            self.display_spread()
+        else:
+            i=-1
+            self.area_spread = [[0 for i in range(9)] for j in range(9)]
+            self.area_spread[4][4] = 1
+            self.display_spread()
+        self.after(int(1000*self.SPREAD_RATE), self.spread_blink, i+1)
+
+    def display_spread(self):
+        for y in range(len(self.area_spread)):
+            for x in range(len(self.area_spread[0])):
+                self.canevas.itemconfigure(self.list_rect_spread[y][x], fill=self.color(self.area_spread[y][x]))
 
     def scroll(self, event):
         self.xscroll(0)
