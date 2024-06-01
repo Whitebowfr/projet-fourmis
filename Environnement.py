@@ -1,9 +1,9 @@
 import taichi as ti
 import constants
-from PIL import Image
-import numpy as np
 
 ti.init(arch=ti.vulkan)
+
+pixel_array = ti.types.ndarray(ti.math.vec3, 2)
 
 @ti.data_oriented
 class Environment():    
@@ -39,7 +39,7 @@ class Environment():
                         if distance < constants.FOOD_SIZE:
                             self.food[int(center[0] + x), int(center[1] + y)] = ti.f32(1.0)
     @ti.kernel
-    def load_prebuilt(self, img: ti.types.ndarray(ti.math.vec3, 2)):
+    def load_prebuilt(self, img: pixel_array):
         for i,j in img :
             if img[i,j][0] == 0 and img[i,j][1] == 255 and img[i,j][2] == 0:
                 self.food[i,j] = 1.0

@@ -2,6 +2,8 @@ import taichi as ti
 
 ti.init(arch=ti.vulkan)
 
+coordinates_type = ti.types.vector(2, ti.f32)
+
 @ti.data_oriented
 class Paint() :
     def __init__(self, width, height):
@@ -40,7 +42,7 @@ class Paint() :
             self.prev_pos = mouse
 
     @ti.kernel
-    def paint(self, pos: ti.template(), erase: bool) :
+    def paint(self, pos: coordinates_type, erase: bool) :
         if self.prev_pos.norm() > 0 :
             vect_diff = pos - self.prev_pos
             for i in range(ti.round(vect_diff.norm())) :
@@ -48,7 +50,7 @@ class Paint() :
                 self.fill_circle(self.prev_pos + vect_diff.normalized() * i, erase)
         
     @ti.func
-    def fill_circle(self, pos: ti.template(), erase: bool) :
+    def fill_circle(self, pos: coordinates_type, erase: bool) :
         center = ti.cast(pos, ti.i32)
         size = ti.cast(self.brush_size, ti.i32)
         if erase :
