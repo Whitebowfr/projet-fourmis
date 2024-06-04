@@ -1,6 +1,12 @@
-from time import sleep
 import tkinter as tk
+from tkinter import ttk
+from tkinter.filedialog import askopenfilename
 import numpy as np
+import csv
+
+
+
+import constants as c
 
 class Display_param(tk.Tk):
 
@@ -15,13 +21,19 @@ class Display_param(tk.Tk):
         self.list_param = [2, 3, 45, 15, 15]
         self.anc_val_sensor_offset = self.list_param[0]
 
+        self.f_path = "parametres_fourmis_(default).csv"
+        
         self.widgets_creation()
+        
+        self.refresh_menu_deroulant(None)
 
     def widgets_creation(self):
         self.top_zone = tk.Frame(self)
         self.top_zone.pack(side="top", fill='x')
         self.top_zone['borderwidth'] = 2
         self.top_zone['relief'] = 'raised'
+
+
 
         self.left_zone = tk.Frame(self)
         self.left_zone.pack(side='left')
@@ -34,23 +46,47 @@ class Display_param(tk.Tk):
         self.left_zone2['relief'] = 'raised'
 
         self.lbl_message = tk.Label(self.top_zone, text = "Gestion des paramètres pré-enregistré :", font='Helvetica 12 bold')
-        self.lbl_message.pack(side = tk.LEFT)
+        self.lbl_message.grid(row=0, column=0, sticky='w')
+        self.lbl_message = tk.Label(self.top_zone, text = "Valeur sélectionner :", font='Helvetica 12 bold')
+        self.lbl_message.grid(row=1, column=0, sticky='e')
 
-        self.button_verr = tk.Button(self.top_zone, text="Verrouiler les paramètres")
-        self.button_verr.pack(side = tk.RIGHT)
-        self.button_verr.bind('<Button-1>', self.end)
+        
+        self.texte = tk.StringVar()
+        self.texte.set("Nom de la configuration à enregistrer")
+        self.entry = tk.Entry(self.top_zone, textvariable=self.texte, width=30)
+        self.entry.grid(row=0, column=1, sticky='w')
 
-        self.button_save = tk.Button(self.top_zone, text="Enregistre les paramètres")
-        self.button_save.pack(side = tk.RIGHT)
+        self.menu_deroulant = ttk.Combobox(self.top_zone, values=[])
+        self.menu_deroulant.grid(row=1, column=1, sticky='w')
+
+        self.menu_deroulant.bind('<<ComboboxSelected>>', self.change_value)
+        self.menu_deroulant.bind('<Button-1>', self.refresh_menu_deroulant)
+        
+
+        self.button_suppr = tk.Button(self.top_zone, text="Supprimer la configuration")
+        self.button_suppr.grid(row=1, column=2, sticky='w')
+        self.button_suppr.bind('<Button-1>', self.supprimer_param)
+
+        self.button_verr = tk.Button(self.top_zone, text="Verrouiller la configuration")
+        self.button_verr.grid(row=1, column=4, sticky='w')
+        self.button_verr.bind('<Button-1>', self.verr_param)
+
+        self.button_save = tk.Button(self.top_zone, text="Enregistrer la configuration")
+        self.button_save.grid(row=1, column=5, sticky='w')
         self.button_save.bind('<Button-1>', self.parameter_save)
 
+        self.button_chose_file = tk.Button(self.top_zone, text="Choisir un fichier")
+        self.button_chose_file.grid(row=0, column=2, sticky='w')
+        self.button_chose_file.bind('<Button-1>', self.chose_file)
+
         self.button_scro = tk.Button(self.top_zone, text="Défile l'affichage")
-        self.button_scro.pack(side ='right', anchor = "ne")
+        self.button_scro.grid(row=1, column=6, sticky='w')
         self.button_scro.bind('<Button-1>', self.scroll)
 
-        self.button_test = tk.Button(self.top_zone, text="Test")
-        self.button_test.pack(side ='right', anchor = "ne")
-        # self.button_test.bind('<Button-1>', self.blink)
+        self.label_message = tk.Label(self.top_zone, text = "", font='Helvetica 12 bold')
+        self.label_message.grid(row=0, column=4, sticky='w', columnspan=3)
+
+
 
         self.val_random_fact = tk.DoubleVar()
         self.val_random_fact.set(5)
@@ -212,7 +248,8 @@ class Display_param(tk.Tk):
         if 9 in list_chgt:
             self.canevas.coords(self.food, 950-self.FOOD_SIZE, 310-self.FOOD_SIZE,950+self.FOOD_SIZE, 310+self.FOOD_SIZE)
             self.canevas.itemconfigure(self.txt_food,  font='Times '+str(int(self.FOOD_SIZE/2))+' bold')
-
+        
+        
         self.after(100, self.refresh)
 
     def blink(self):
@@ -288,13 +325,140 @@ class Display_param(tk.Tk):
             else:
                 self.gauche=True
 
-    def parameter_save(self, event):
-        pass
-
     def end(self, event):
         self.recover()
         print(f'offset : {self.SENSOR_OFFSET_DISTANCE}, size : {self.SENSOR_SIZE}, angle : {self.SENSOR_ANGLE_DEGREES}, turn : {self.TURN_SPEED}, move : {self.MOVE_SPEED}, lost : {self.LOST_SPEED}')
         self.quit()
+
+    def parameter_save(self,event):
+        name = self.texte.get()
+        if name == "Nom de la configuration à enregistrer" or name == "":
+            self.label_message.config(text = "Veuillez entrer un nom de configuration", fg='red')
+            return
+        
+        if self.f_path == None:
+            self.label_message.config(text = "Veuillez choisir un fichier", fg='red')
+            return
+        open('parametres_fourmis_(default).csv', 'a', newline='')
+        liste_param = [name,self.val_sens_offset_dist.get(), self.val_sens_size.get(), self.val_sens_angle.get(), self.val_turn_spd.get(), self.val_mv_spd.get()]
+        with open(self.f_path, 'a', newline='') as csvfile:
+            
+            writer = csv.writer(csvfile)
+            writer.writerow(liste_param)
+        self.label_message.config(text = "Configuration enregistrée", fg='green')
+    
+
+    def change_value(self, event):
+        if self.f_path == None:
+            self.label_message.config(text = "Veuillez choisir un fichier", fg='red')
+            return
+        
+
+
+
+        with open(self.f_path, newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            liste = []
+            
+            for row in reader:
+
+                if row[0] == self.menu_deroulant.get():
+                    liste = row
+
+
+        self.val_sens_offset_dist.set(liste[1])
+        self.val_sens_size.set(liste[2])
+        self.val_sens_angle.set(liste[3])
+        self.val_turn_spd.set(liste[4])
+        self.val_mv_spd.set(liste[5])
+        self.display_canvas()
+        self.refresh()
+
+    def supprimer_param(self,event):
+        liste = self.menu_deroulant["values"]
+        if len(liste) == 0:
+            self.label_message.config(text = "Aucune configuration à supprimer", fg='red')
+            return
+
+        liste = list(liste)
+        index = self.menu_deroulant.current()
+        value = self.menu_deroulant.get().split(' ')
+
+
+        liste.pop(index)
+        self.menu_deroulant.config(values=liste)
+        if len(liste) != 0:
+            self.menu_deroulant.current(0)
+        
+
+
+        new_csv = []
+        with open(self.f_path, 'r', newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            for row in reader:
+                if not ( row[0].split(' ') == value):
+                    new_csv.append(row)
+        with open(self.f_path, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            for row in new_csv:
+                writer.writerow(row)
+        self.display_canvas()
+        self.refresh()
+
+        return value,index
+
+    def verr_param(self,event):
+        f = open("constants.py", "r")
+        lines = f.readlines()
+        f.close()
+
+        f = open("constants.py", "w")
+        for line in lines:
+            if "SENSOR_OFFSET_DISTANCE" in line:
+                f.write(f'SENSOR_OFFSET_DISTANCE: int = {self.SENSOR_OFFSET_DISTANCE}\n')
+            elif "SENSOR_SIZE" in line:
+                f.write(f'SENSOR_SIZE: int = {self.SENSOR_SIZE}\n')
+            elif "SENSOR_ANGLE_RAD" in line:
+                f.write(f'SENSOR_ANGLE_RAD: float = {self.SENSOR_ANGLE_DEGREES} * 3.14 / 180\n')
+            elif "TURN_SPEED" in line:
+                f.write(f'TURN_SPEED: float = {self.TURN_SPEED}  * 3.14 / 180\n')
+            elif "MOVE_SPEED" in line:
+                print(self.MOVE_SPEED)
+                f.write(f'MOVE_SPEED: int = {self.MOVE_SPEED}\n')
+            else:
+                f.write(line)
+
+        c.SENSOR_OFFSET_DISTANCE = self.SENSOR_OFFSET_DISTANCE
+        c.SENSOR_SIZE = self.SENSOR_SIZE
+        c.SENSOR_ANGLE_RAD = self.SENSOR_ANGLE_DEGREES * 3.14 / 180
+        c.TURN_SPEED = self.TURN_SPEED
+        c.MOVE_SPEED = self.MOVE_SPEED
+        print(f'offset : {c.SENSOR_OFFSET_DISTANCE}, size : {c.SENSOR_SIZE}, angle : {c.SENSOR_ANGLE_RAD}, turn : {c.TURN_SPEED}, move : {c.MOVE_SPEED}')
+
+        self.end(event)
+    def chose_file(self,event):
+        self.f_path = askopenfilename(initialdir="./",title="Select File", filetypes=(("CSV files","*.csv*"),("All Files","*.*")))
+        if self.f_path == "":
+            self.label_message.config(text = "Veuillez choisir un fichier", fg='red')
+            self.f_path = None
+            return
+        self.label_message.config(text = "Fichier choisi", fg='green')
+        self.refresh_menu_deroulant(event)
+
+    def refresh_menu_deroulant(self,event):
+        if self.f_path == None:
+            self.label_message.config(text = "Veuillez choisir un fichier", fg='red')
+            return
+        with open(self.f_path, newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            liste = []
+            for row in reader:
+                liste.append(row[0])
+        self.menu_deroulant.config(values=liste)
+        if len(liste) != 0:
+            self.menu_deroulant.current(0)
+        self.display_canvas()
+        self.refresh()
 
 if __name__ == "__main__":
     app = Display_param()
