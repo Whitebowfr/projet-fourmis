@@ -21,11 +21,23 @@ class Display() :
         self.gui = ti.ui.Window('Fourmi', res=(self.width, self.height))
         self.canvas = self.gui.get_canvas()
         self.home = home #ti.Vector(int, int)
+        self.image = ti.ndarray(dtype=ti.math.vec4, shape=(self.height, self.width))
+        tmp = ti.tools.imread("./saved_images/dirt_bg.png")
+        tmp = ti.tools.imresize(tmp, self.width, self.height)
+        self.image.from_numpy(tmp)
 
 
-        
-    def update_window(self) :
-        self.update_pixels()
+
+    def init_background(self) :
+        self.background = ti.Vector.field(n=4, dtype=ti.f16, shape=(self.height, self.width))
+
+        """for i in range(self.height):
+            for j in range(self.width):
+                self.background[i, j] = self.image[i, j]"""
+
+
+    def update_window(self, bg) :
+        self.update_pixels(bg)
         self.update_ants()
         if not ti.static(constants.HIDE_MARKERS) :
             self.update_food()
@@ -41,7 +53,7 @@ class Display() :
                     self.color_buffer[x, y] = ti.Vector([0.0, 1.0, 0.0, 1.0], dt=ti.f32 )
     @ti.kernel
     def generate_home_mask(self):
-        home_size = int(constants.HOME_SIZE * 2 * 0.125)
+        home_size = int(constants.HOME_SIZE * 2 * (1/constants.HOME_ZOOM_FACTOR))
         for x in range(0, home_size):
             for y in range(0, home_size):
                 distance = ti.sqrt((x - home_size)**2 + (y - home_size)**2)
@@ -50,7 +62,7 @@ class Display() :
     def update_home(self) :
         for x in range(-ti.static(constants.HOME_SIZE), ti.static(constants.HOME_SIZE)) :
             for y in range(-ti.static(constants.HOME_SIZE), ti.static(constants.HOME_SIZE)) :
-                col = self.home_mask[int(0.125 * (x + constants.HOME_SIZE - 4)), int(0.125 * (y + constants.HOME_SIZE - 4))]
+                col = self.home_mask[(x + constants.HOME_SIZE) // constants.HOME_ZOOM_FACTOR, (y + constants.HOME_SIZE) // constants.HOME_ZOOM_FACTOR]
                 self.color_buffer[ti.Vector([self.home[0] + x, self.home[1] + y])] = col
     @ti.kernel
     def update_ants(self) :
@@ -58,7 +70,7 @@ class Display() :
             self.color_buffer[int(self.ants[i])] = ti.Vector([1.0,0.0,0.0, 1.0], dt=ti.f32)
     
     @ti.kernel            
-    def update_pixels(self):
+    def update_pixels(self, bg: ti.types.ndarray(ti.math.vec4, 2)):
         for i, j in self.color_buffer:
             col = ti.Vector([0.0, 0.0, 0.0, 0.0], dt=ti.f32)
             for k in range(constants.NUMBER_OF_PHEROMONES):
@@ -75,7 +87,7 @@ class Display() :
         self.ants = ants
         self.food = food
         if updateWindow :
-            self.update_window()
+            self.update_window(self.image)
 
 if __name__ == '__main__' :
     ti.init(arch=ti.vulkan)

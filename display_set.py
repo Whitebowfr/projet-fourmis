@@ -3,9 +3,6 @@ from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 import numpy as np
 import csv
-
-
-
 import constants as c
 
 class Display_param(tk.Toplevel):
