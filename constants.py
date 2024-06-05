@@ -25,7 +25,8 @@ TRESHOLD: float = 0.1
 colors = {"fourmis": "#FF0000",
           "food": "#00FF00",
           "maison": "#FFA500",
-          "obstacles": "#646464"}
+          "obstacles": "#646464",
+          "pheromones": ["#FF0000", "#00FFFF"]}
 
 DEFAULT_PAINT_SIZE: int = 20
 
