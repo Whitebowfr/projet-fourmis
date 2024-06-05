@@ -5,8 +5,7 @@ import taichi as ti
 import time
 import constants
 
-ti.init()
-
+@ti.data_oriented
 class FourmiSim:
     def __init__(self, width, height, N):
         self.env = Environment(width, height, "./saved_images/output.png")#"./saved_images/output.png"
@@ -44,6 +43,7 @@ class FourmiSim:
     
 
 if __name__ == "__main__":
+    ti.init()
     sim = FourmiSim(700, 700, 2000)
     sim.run()
             
