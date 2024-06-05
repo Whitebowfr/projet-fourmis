@@ -8,6 +8,7 @@ class Paint() :
         self.window = ti.GUI("Paint", (width, height))
         self.brush_size = self.window.slider("Brush size", 1, 50, 10)
         self.prev_pos = ti.Vector([0.0, 0.0])
+        self.save = self.window.button("Save")
 
     def run(self) :
         mouse = ti.Vector([0.0, 0.0])
@@ -21,10 +22,11 @@ class Paint() :
             elif self.window.is_pressed(ti.ui.RMB) :
                 mouse = ti.Vector(self.window.get_cursor_pos()) * self.size
                 self.paint(mouse, True)
+            elif self.window.is_pressed(self.save) :
+                ti.tools.imwrite(self.image, "./saved_images/paint.png")
+                self.window.running = False
             else :
                 mouse = ti.Vector([0.0, 0.0])
-
-            ti.sync()
 
             if self.window.running:
                 self.window.show()
