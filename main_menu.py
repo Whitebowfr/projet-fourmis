@@ -29,7 +29,7 @@ class MainMenu(tk.Tk):
         self.button4.pack(ipadx=3, ipady=3, expand=True)
 
     def button1_action(self):
-        FourmiSim(700, 700, 2000).run()
+        FourmiSim(700, 700, 1000).run()
 
     def button2_action(self):
         Display_param().mainloop()
