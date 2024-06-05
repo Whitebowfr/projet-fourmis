@@ -93,12 +93,6 @@ class Display_param(tk.Toplevel):
         self.random_fact = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 0, to = 15, resolution = 1, tickinterval=3, label='Valeur RANDOM FACT', variable= self.val_random_fact)                 
         self.random_fact.pack(side ='bottom', fill = 'x')
 
-        # choix entre 1 et 2
-        """ self.val_number_pher = tk.DoubleVar()
-        self.val_number_pher.set(10)
-        self.number_pher = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 5, to = 100, resolution = 1, tickinterval=19, label='Valeur NUMBER OF PHEROMONES', variable= self.val_number_pher)                 
-        self.number_pher.pack(side ='bottom', fill = 'x') """
-
         self.val_food_count = tk.DoubleVar()
         self.val_food_count.set(12)
         self.food_count = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 1, to = 10, resolution = 1, tickinterval=2, label='Valeur FOOD COUNT', variable= self.val_food_count)                 
@@ -175,11 +169,10 @@ class Display_param(tk.Toplevel):
         self.MOVE_SPEED = int(self.val_mv_spd.get())
         self.LOST_SPEED = float(self.val_lost_spd.get())
         self.DECAY_RATE = float(self.val_decay_rate.get())
-        self.SPREAD_RATE = int(self.val_spread_rate.get())
+        self.SPREAD_RATE = float(self.val_spread_rate.get())
         self.HOME_SIZE = int(self.val_home_size.get())
         self.FOOD_SIZE = int(self.val_food_size.get())
         self.FOOD_COUNT = int(self.val_food_count.get())
-        # self.NUMBER_PHER = int(self.val_number_pher.get())
         self.RANDOM_FACT = int(self.val_random_fact.get())
         new_list = [self.SENSOR_OFFSET_DISTANCE, self.SENSOR_SIZE, self.SENSOR_ANGLE_DEGREES, self.TURN_SPEED, self.MOVE_SPEED, self.LOST_SPEED, self.DECAY_RATE, self.SPREAD_RATE, self.HOME_SIZE, self.FOOD_SIZE, self.FOOD_COUNT, self.RANDOM_FACT]
         if self.list_param:
@@ -482,7 +475,6 @@ class Display_param(tk.Toplevel):
         c.SENSOR_ANGLE_RAD = self.SENSOR_ANGLE_DEGREES * 3.14 / 180
         c.TURN_SPEED = self.TURN_SPEED
         c.MOVE_SPEED = self.MOVE_SPEED
-        # print(f'offset : {c.SENSOR_OFFSET_DISTANCE}, size : {c.SENSOR_SIZE}, angle : {c.SENSOR_ANGLE_RAD}, turn : {c.TURN_SPEED}, move : {c.MOVE_SPEED}')
 
         self.end(event)
 
