@@ -8,7 +8,6 @@ import csv
 
 import constants as c
 
-class Display_param(tk.Tk):
 
     def __init__(self):
         super().__init__()
@@ -340,7 +339,6 @@ class Display_param(tk.Tk):
             self.label_message.config(text = "Veuillez choisir un fichier", fg='red')
             return
         open('parametres_fourmis_(default).csv', 'a', newline='')
-        liste_param = [name,self.val_sens_offset_dist.get(), self.val_sens_size.get(), self.val_sens_angle.get(), self.val_turn_spd.get(), self.val_mv_spd.get()]
         with open(self.f_path, 'a', newline='') as csvfile:
             
             writer = csv.writer(csvfile)
