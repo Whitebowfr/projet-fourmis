@@ -8,7 +8,7 @@ import csv
 
 import constants as c
 
-class Display_param(tk.Tk):
+class Display_param(tk.Toplevel):
 
     def __init__(self):
         super().__init__()
