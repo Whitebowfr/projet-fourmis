@@ -3,9 +3,6 @@ from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 import numpy as np
 import csv
-
-
-
 import constants as c
 
 class Display_param(tk.Tk):
@@ -33,8 +30,6 @@ class Display_param(tk.Tk):
         self.top_zone['borderwidth'] = 2
         self.top_zone['relief'] = 'raised'
 
-
-
         self.left_zone = tk.Frame(self)
         self.left_zone.pack(side='left')
         self.left_zone['borderwidth'] = 2
@@ -50,7 +45,6 @@ class Display_param(tk.Tk):
         self.lbl_message = tk.Label(self.top_zone, text = "Valeur sélectionner :", font='Helvetica 12 bold')
         self.lbl_message.grid(row=1, column=0, sticky='e')
 
-        
         self.texte = tk.StringVar()
         self.texte.set("Nom de la configuration à enregistrer")
         self.entry = tk.Entry(self.top_zone, textvariable=self.texte, width=30)
@@ -271,16 +265,19 @@ class Display_param(tk.Tk):
         return color_hexa
 
     def spread_blink(self, i=-1):
+        
+        self.area_spread_save = [[0 for i in range(9)] for j in range(9)]
         if i<5 and i>=0: 
             for y in range(1, 8):
                 for x in range(1, 8):
                     if self.area_spread[y][x]!=0:
-                        value_spread = self.area_spread[y][x]/5
-                        self.area_spread[y][x]=value_spread
-                        self.area_spread[y][x-1]+=value_spread
-                        self.area_spread[y][x+1]+=value_spread
-                        self.area_spread[y-1][x]+=value_spread
-                        self.area_spread[y+1][x]+=value_spread
+                        value_spread = self.area_spread[y][x]/2
+                        self.area_spread_save[y][x]=value_spread
+                        self.area_spread_save[y][x-1]+=value_spread
+                        self.area_spread_save[y][x+1]+=value_spread
+                        self.area_spread_save[y-1][x]+=value_spread
+                        self.area_spread_save[y+1][x]+=value_spread
+            self.area_spread = self.area_spread_save
             self.display_spread()
         else:
             i=-1
@@ -353,9 +350,6 @@ class Display_param(tk.Tk):
             self.label_message.config(text = "Veuillez choisir un fichier", fg='red')
             return
         
-
-
-
         with open(self.f_path, newline='') as csvfile:
             reader = csv.reader(csvfile)
             liste = []
@@ -365,14 +359,11 @@ class Display_param(tk.Tk):
                 if row[0] == self.menu_deroulant.get():
                     liste = row
 
-
         self.val_sens_offset_dist.set(liste[1])
         self.val_sens_size.set(liste[2])
         self.val_sens_angle.set(liste[3])
         self.val_turn_spd.set(liste[4])
         self.val_mv_spd.set(liste[5])
-        self.display_canvas()
-        self.refresh()
 
     def supprimer_param(self,event):
         liste = self.menu_deroulant["values"]
@@ -402,9 +393,7 @@ class Display_param(tk.Tk):
             writer = csv.writer(csvfile)
             for row in new_csv:
                 writer.writerow(row)
-        self.display_canvas()
-        self.refresh()
-
+        
         return value,index
 
     def verr_param(self,event):
@@ -457,8 +446,6 @@ class Display_param(tk.Tk):
         self.menu_deroulant.config(values=liste)
         if len(liste) != 0:
             self.menu_deroulant.current(0)
-        self.display_canvas()
-        self.refresh()
 
 if __name__ == "__main__":
     app = Display_param()
