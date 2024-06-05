@@ -8,6 +8,7 @@ import csv
 
 import constants as c
 
+class Display_param(tk.Toplevel):
 
     def __init__(self):
         super().__init__()
@@ -339,6 +340,7 @@ import constants as c
             self.label_message.config(text = "Veuillez choisir un fichier", fg='red')
             return
         open('parametres_fourmis_(default).csv', 'a', newline='')
+        liste_param = [name,self.val_sens_offset_dist.get(), self.val_sens_size.get(), self.val_sens_angle.get(), self.val_turn_spd.get(), self.val_mv_spd.get(), self.val_lost_spd.get(), self.val_decay_rate.get(), self.val_spread_rate.get(), self.val_home_size.get(), self.val_food_size.get(), self.val_food_count.get(), self.val_random_fact.get()]
         with open(self.f_path, 'a', newline='') as csvfile:
             
             writer = csv.writer(csvfile)
@@ -369,8 +371,15 @@ import constants as c
         self.val_sens_angle.set(liste[3])
         self.val_turn_spd.set(liste[4])
         self.val_mv_spd.set(liste[5])
-        self.display_canvas()
-        self.refresh()
+        self.val_lost_spd.set(liste[6])
+        self.val_decay_rate.set(liste[7])
+        self.val_spread_rate.set(liste[8])
+        self.val_home_size.set(liste[9])
+        self.val_food_size.set(liste[10])
+        self.val_food_count.set(liste[11])
+        self.val_random_fact.set(liste[12])
+
+        
 
     def supprimer_param(self,event):
         liste = self.menu_deroulant["values"]
