@@ -35,7 +35,7 @@ class MainMenu(tk.Tk):
         Display_param().mainloop()
 
     def button3_action(self):
-        Paint(512, 512).run()
+        Paint(700,700).run()
 
 # Create an instance of the MainMenu class
 menu = MainMenu()
