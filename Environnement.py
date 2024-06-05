@@ -1,8 +1,6 @@
 import taichi as ti
 import constants
 
-ti.init(arch=ti.vulkan)
-
 pixel_array = ti.types.ndarray(ti.math.vec3, 2)
 
 @ti.data_oriented

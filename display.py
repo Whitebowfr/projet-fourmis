@@ -4,8 +4,6 @@ import taichi as ti
 import ants as ant
 import constants
 
-ti.init(arch=ti.vulkan)
-
 @ti.data_oriented
 class Display() :
 
@@ -80,6 +78,7 @@ class Display() :
             self.update_window()
 
 if __name__ == '__main__' :
+    ti.init(arch=ti.vulkan)
     app = Display(1000,1000)
     while True :
         app.update_window()

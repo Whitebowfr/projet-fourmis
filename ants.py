@@ -1,8 +1,6 @@
 import taichi as ti
 import constants
 
-ti.init(arch=ti.vulkan)
-
 @ti.data_oriented
 class Ants :
     def __init__(self, N, grid, home, foodgrid):
