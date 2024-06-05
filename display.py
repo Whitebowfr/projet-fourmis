@@ -17,7 +17,7 @@ class Display() :
         self.home_mask = ti.Vector.field(n=4, dtype=ti.f16, shape=(2 * constants.HOME_SIZE, 2 * constants.HOME_SIZE))
         self.generate_home_mask()
         self.res = (self.width, self.height)
-        self.color_buffer = ti.Vector.field(n=4, dtype=ti.u8, shape=(self.height, self.width))
+        self.color_buffer = ti.Vector.field(n=4, dtype=ti.f32, shape=(self.height, self.width))
         self.gui = ti.ui.Window('Fourmi', res=(self.width, self.height))
         self.canvas = self.gui.get_canvas()
         self.home = home #ti.Vector(int, int)
@@ -38,14 +38,14 @@ class Display() :
         for x in range(self.food.shape[0]):
             for y in range(self.food.shape[1]):
                 if self.food[x, y] != 0 :
-                    self.color_buffer[x, y] = ti.Vector([0, 255, 0, 255], dt=ti.u8 )
+                    self.color_buffer[x, y] = ti.Vector([0.0, 1.0, 0.0, 1.0], dt=ti.f32 )
     @ti.kernel
     def generate_home_mask(self):
         home_size = int(constants.HOME_SIZE * 2 * 0.125)
         for x in range(0, home_size):
             for y in range(0, home_size):
                 distance = ti.sqrt((x - home_size)**2 + (y - home_size)**2)
-                self.home_mask[x, y] = [150 + 2 * (home_size - distance) + 50 * ti.random(), 75 + (home_size - distance) + 50 * ti.random(), 0, 255]
+                self.home_mask[x, y] = [ti.f32((150 + 2 * (home_size - distance) + 50 * ti.random()) / 255), ti.f32((75 + (home_size - distance) + 50 * ti.random())/255), 0.0, 1.0]
     @ti.kernel
     def update_home(self) :
         for x in range(-ti.static(constants.HOME_SIZE), ti.static(constants.HOME_SIZE)) :
@@ -55,17 +55,17 @@ class Display() :
     @ti.kernel
     def update_ants(self) :
         for i in self.ants :
-            self.color_buffer[int(self.ants[i])] = ti.Vector([255,0,0, 255], dt=ti.u8)
+            self.color_buffer[int(self.ants[i])] = ti.Vector([1.0,0.0,0.0, 1.0], dt=ti.f32)
     
     @ti.kernel            
     def update_pixels(self):
         for i, j in self.color_buffer:
-            col = ti.Vector([0, 0, 0, 0], dt=ti.u8)
+            col = ti.Vector([0.0, 0.0, 0.0, 0.0], dt=ti.f32)
             for k in range(constants.NUMBER_OF_PHEROMONES):
                 if k != 0 :
-                    col += ti.Vector([0, 0,ti.u8(self.grid[i, j, k] * 255), 0], dt=ti.u8)
+                    col += ti.Vector([0.0, 0.0,ti.f32(self.grid[i, j, k]), 0.0], dt=ti.f32)
                 else :
-                    col = ti.Vector([ti.u8(self.grid[i, j, k] * 255)] * 2 + [0,0], dt=ti.u8)
+                    col = ti.Vector([ti.f32(self.grid[i, j, k])] * 2 + [0.0,0.0], dt=ti.f32)
 
             self.color_buffer[i, j] = col
 
