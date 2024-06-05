@@ -26,10 +26,10 @@ colors = {"fourmis": "#FF0000",
           "food": "#00FF00",
           "maison": "#FFA500",
           "obstacles": "#646464",
-          "pheromones": ["#FF0000", "#00FFFF"]}
+          "pheromones": ["#0000FF", "#FFFF00"]}
 
 DEFAULT_PAINT_SIZE: int = 20
 
-HOME_ZOOM_FACTOR: int = 2
+HOME_ZOOM_FACTOR: int = 1
 
-BG_BRIGHTNESS: float = 0.2
+BG_BRIGHTNESS: float = 0.4

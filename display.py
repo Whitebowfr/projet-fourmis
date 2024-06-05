@@ -63,11 +63,11 @@ class Display() :
                     self.color_buffer[x, y] = ti.Vector(hex_to_rgb(constants.colors["food"]), dt=ti.f32 )
     @ti.kernel
     def generate_home_mask(self):
-        home_size = int(constants.HOME_SIZE * 2 * (1/constants.HOME_ZOOM_FACTOR))
+        home_size = int(constants.HOME_SIZE * 2 /constants.HOME_ZOOM_FACTOR)
         for x in range(0, home_size):
             for y in range(0, home_size):
-                distance = ti.sqrt((x - home_size)**2 + (y - home_size)**2)
-                self.home_mask[x, y] = [ti.f32((150 + 2 * (home_size - distance) + 50 * ti.random()) / 255), ti.f32((75 + (home_size - distance) + 50 * ti.random())/255), 0.0, 1.0]
+                distance = ti.sqrt((x-home_size/2)**2 + (y-home_size/2)**2)
+                self.home_mask[x, y] = [ti.f32((75 + 2 * (home_size - distance) + 30 * ti.random()) / 255), ti.f32((25 + (home_size - distance) + 20 * ti.random())/255), 0.0, 1.0]
     @ti.kernel
     def update_home(self) :
         for x in range(-ti.static(constants.HOME_SIZE), ti.static(constants.HOME_SIZE)) :
@@ -83,7 +83,8 @@ class Display() :
     def update_pixels(self, bg: ti.types.ndarray(ti.math.vec4, 2)):
         c = constants.BG_BRIGHTNESS
         for i, j in self.color_buffer:
-            col = ti.Vector([0.0, 0.0, 0.0, 0.0], dt=ti.f32)
+            print(bg[i,j])
+            col = ti.Vector([bg[i,j][0]*c/255, bg[i,j][1]*c/255, bg[i,j][2]*c/255, bg[i,j][3]*c/255], dt=ti.f32)
             for k in range(constants.NUMBER_OF_PHEROMONES):
                 col += self.pheromones_colors[k]* ti.f32(self.grid[i, j, k])
 
