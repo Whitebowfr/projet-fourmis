@@ -440,18 +440,11 @@ class Display_param(tk.Toplevel):
                 f.write(f'FOOD_SIZE: int = {self.FOOD_SIZE}\n')
             elif "FOOD_COUNT" in line:
                 f.write(f'FOOD_COUNT: int = {self.FOOD_COUNT}\n')
-            elif "NUMBER_OF_PHEROMONES" in line:
-                f.write(f'NUMBER_OF_PHEROMONES: int = {self.NUMBER_PHEROMONES}\n')
             elif "LOST_SPEED" in line:
                 f.write(f'LOST_SPEED: float = {self.LOST_SPEED}\n')
             else:
                 f.write(line)
 
-        c.SENSOR_OFFSET_DISTANCE = self.SENSOR_OFFSET_DISTANCE
-        c.SENSOR_SIZE = self.SENSOR_SIZE
-        c.SENSOR_ANGLE_RAD = self.SENSOR_ANGLE_DEGREES * 3.14 / 180
-        c.TURN_SPEED = self.TURN_SPEED
-        c.MOVE_SPEED = self.MOVE_SPEED
         print(f'offset : {c.SENSOR_OFFSET_DISTANCE}, size : {c.SENSOR_SIZE}, angle : {c.SENSOR_ANGLE_RAD}, turn : {c.TURN_SPEED}, move : {c.MOVE_SPEED}')
 
         self.end(event)
