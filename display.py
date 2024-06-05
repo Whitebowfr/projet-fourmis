@@ -4,6 +4,12 @@ import taichi as ti
 import ants as ant
 import constants
 
+def hex_to_rgb(hex_code):
+    hex_code = hex_code.lstrip('#')
+    rgb = [int(hex_code[i:i+2], 16) / 255.0 for i in (0, 2, 4)]
+    rgb += [1.0]
+    return rgb
+
 @ti.data_oriented
 class Display() :
 
@@ -17,15 +23,31 @@ class Display() :
         self.home_mask = ti.Vector.field(n=4, dtype=ti.f16, shape=(2 * constants.HOME_SIZE, 2 * constants.HOME_SIZE))
         self.generate_home_mask()
         self.res = (self.width, self.height)
-        self.color_buffer = ti.Vector.field(n=4, dtype=ti.u8, shape=(self.height, self.width))
+        self.color_buffer = ti.Vector.field(n=4, dtype=ti.f32, shape=(self.height, self.width))
         self.gui = ti.ui.Window('Fourmi', res=(self.width, self.height))
         self.canvas = self.gui.get_canvas()
         self.home = home #ti.Vector(int, int)
+        self.image = ti.ndarray(dtype=ti.math.vec4, shape=(self.height, self.width))
+        self.pheromones_colors = ti.Vector.field(n=4, dtype=ti.f32, shape=constants.NUMBER_OF_PHEROMONES)
+        self.fill_phero_colors()
+        tmp = ti.tools.imread("./saved_images/dirt_bg.png")
+        tmp = ti.tools.imresize(tmp, self.width, self.height)
+        self.image.from_numpy(tmp)
+
+    def fill_phero_colors(self):
+        for i in range(constants.NUMBER_OF_PHEROMONES):
+            self.pheromones_colors[i] = ti.Vector(hex_to_rgb(constants.colors["pheromones"][i]), dt=ti.f32)
+
+    def init_background(self) :
+        self.background = ti.Vector.field(n=4, dtype=ti.f16, shape=(self.height, self.width))
+
+        """for i in range(self.height):
+            for j in range(self.width):
+                self.background[i, j] = self.image[i, j]"""
 
 
-        
-    def update_window(self) :
-        self.update_pixels()
+    def update_window(self, bg) :
+        self.update_pixels(bg)
         self.update_ants()
         if not ti.static(constants.HIDE_MARKERS) :
             self.update_food()
@@ -38,34 +60,33 @@ class Display() :
         for x in range(self.food.shape[0]):
             for y in range(self.food.shape[1]):
                 if self.food[x, y] != 0 :
-                    self.color_buffer[x, y] = ti.Vector([0, 255, 0, 255], dt=ti.u8 )
+                    self.color_buffer[x, y] = ti.Vector(hex_to_rgb(constants.colors["food"]), dt=ti.f32 )
     @ti.kernel
     def generate_home_mask(self):
-        home_size = int(constants.HOME_SIZE * 2 * 0.125)
+        home_size = int(constants.HOME_SIZE * 2 /constants.HOME_ZOOM_FACTOR)
         for x in range(0, home_size):
             for y in range(0, home_size):
-                distance = ti.sqrt((x - home_size)**2 + (y - home_size)**2)
-                self.home_mask[x, y] = [150 + 2 * (home_size - distance) + 50 * ti.random(), 75 + (home_size - distance) + 50 * ti.random(), 0, 255]
+                distance = ti.sqrt((x-home_size/2)**2 + (y-home_size/2)**2)
+                self.home_mask[x, y] = [ti.f32((75 + 2 * (home_size - distance) + 30 * ti.random()) / 255), ti.f32((25 + (home_size - distance) + 20 * ti.random())/255), 0.0, 1.0]
     @ti.kernel
     def update_home(self) :
         for x in range(-ti.static(constants.HOME_SIZE), ti.static(constants.HOME_SIZE)) :
             for y in range(-ti.static(constants.HOME_SIZE), ti.static(constants.HOME_SIZE)) :
-                col = self.home_mask[int(0.125 * (x + constants.HOME_SIZE - 4)), int(0.125 * (y + constants.HOME_SIZE - 4))]
+                col = self.home_mask[(x + constants.HOME_SIZE) // constants.HOME_ZOOM_FACTOR, (y + constants.HOME_SIZE) // constants.HOME_ZOOM_FACTOR]
                 self.color_buffer[ti.Vector([self.home[0] + x, self.home[1] + y])] = col
     @ti.kernel
     def update_ants(self) :
         for i in self.ants :
-            self.color_buffer[int(self.ants[i])] = ti.Vector([255,0,0, 255], dt=ti.u8)
+            self.color_buffer[int(self.ants[i])] = ti.Vector(hex_to_rgb(constants.colors["fourmis"]), dt=ti.f32)
     
     @ti.kernel            
-    def update_pixels(self):
+    def update_pixels(self, bg: ti.types.ndarray(ti.math.vec4, 2)):
+        c = constants.BG_BRIGHTNESS
         for i, j in self.color_buffer:
-            col = ti.Vector([0, 0, 0, 0], dt=ti.u8)
+            print(bg[i,j])
+            col = ti.Vector([bg[i,j][0]*c/255, bg[i,j][1]*c/255, bg[i,j][2]*c/255, bg[i,j][3]*c/255], dt=ti.f32)
             for k in range(constants.NUMBER_OF_PHEROMONES):
-                if k != 0 :
-                    col += ti.Vector([0, 0,ti.u8(self.grid[i, j, k] * 255), 0], dt=ti.u8)
-                else :
-                    col = ti.Vector([ti.u8(self.grid[i, j, k] * 255)] * 2 + [0,0], dt=ti.u8)
+                col += self.pheromones_colors[k]* ti.f32(self.grid[i, j, k])
 
             self.color_buffer[i, j] = col
 
@@ -75,14 +96,7 @@ class Display() :
         self.ants = ants
         self.food = food
         if updateWindow :
-            self.update_window()
+            self.update_window(self.image)
 
-if __name__ == '__main__' :
-    ti.init(arch=ti.vulkan)
-    app = Display(1000,1000)
-    while True :
-        app.update_window()
-        a = np.random.randint(low=255, size=(100, 100, 3), dtype=np.uint8) # Original
-        app.update_grid(a, [])
-        
+
         

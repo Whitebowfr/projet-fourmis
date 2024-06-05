@@ -8,7 +8,7 @@ import random
 
 import constants as c
 
-class Display_param(tk.Tk):
+class Display_param(tk.Toplevel):
 
     def __init__(self):
         super().__init__()
@@ -373,7 +373,7 @@ class Display_param(tk.Tk):
             self.label_message.config(text = "Veuillez choisir un fichier", fg='red')
             return
         open('parametres_fourmis_(default).csv', 'a', newline='')
-        liste_param = [name,self.val_sens_offset_dist.get(), self.val_sens_size.get(), self.val_sens_angle.get(), self.val_turn_spd.get(), self.val_mv_spd.get()]
+        liste_param = [name,self.val_sens_offset_dist.get(), self.val_sens_size.get(), self.val_sens_angle.get(), self.val_turn_spd.get(), self.val_mv_spd.get(), self.val_lost_spd.get(), self.val_decay_rate.get(), self.val_spread_rate.get(), self.val_home_size.get(), self.val_food_size.get(), self.val_food_count.get(), self.val_random_fact.get()]
         with open(self.f_path, 'a', newline='') as csvfile:
             
             writer = csv.writer(csvfile)
@@ -400,6 +400,15 @@ class Display_param(tk.Tk):
         self.val_sens_angle.set(liste[3])
         self.val_turn_spd.set(liste[4])
         self.val_mv_spd.set(liste[5])
+        self.val_lost_spd.set(liste[6])
+        self.val_decay_rate.set(liste[7])
+        self.val_spread_rate.set(liste[8])
+        self.val_home_size.set(liste[9])
+        self.val_food_size.set(liste[10])
+        self.val_food_count.set(liste[11])
+        self.val_random_fact.set(liste[12])
+
+        
 
     def supprimer_param(self,event):
         liste = self.menu_deroulant["values"]
@@ -448,8 +457,23 @@ class Display_param(tk.Tk):
             elif "TURN_SPEED" in line:
                 f.write(f'TURN_SPEED: float = {self.TURN_SPEED}  * 3.14 / 180\n')
             elif "MOVE_SPEED" in line:
-                print(self.MOVE_SPEED)
                 f.write(f'MOVE_SPEED: int = {self.MOVE_SPEED}\n')
+            elif "RANDOM_FACT" in line:
+                f.write(f' RANDOM_FACT: int = {self.RANDOM_FACT}\n')
+            elif "DECAY_RATE" in line:
+                f.write(f'DECAY_RATE: float = {self.DECAY_RATE}\n')
+            elif "SPREAD_RATE" in line:
+                f.write(f'SPREAD_RATE: int = {self.SPREAD_RATE}\n')
+            elif "HOME_SIZE" in line:
+                f.write(f'HOME_SIZE: int = {self.HOME_SIZE}\n')
+            elif "FOOD_SIZE" in line:
+                f.write(f'FOOD_SIZE: int = {self.FOOD_SIZE}\n')
+            elif "FOOD_COUNT" in line:
+                f.write(f'FOOD_COUNT: int = {self.FOOD_COUNT}\n')
+            elif "NUMBER_OF_PHEROMONES" in line:
+                f.write(f'NUMBER_OF_PHEROMONES: int = {self.NUMBER_PHEROMONES}\n')
+            elif "LOST_SPEED" in line:
+                f.write(f'LOST_SPEED: float = {self.LOST_SPEED}\n')
             else:
                 f.write(line)
 
