@@ -78,8 +78,9 @@ class Display() :
     
     @ti.kernel            
     def update_pixels(self, bg: ti.types.ndarray(ti.math.vec4, 2)):
+        c = constants.BG_BRIGHTNESS
         for i, j in self.color_buffer:
-            col = ti.Vector([bg[i,j][0], bg[i,j][1], bg[i,j][2], bg[i,j][3]], dt=ti.u8)
+            col = ti.Vector([int(bg[i,j][0] * c), int(bg[i,j][1] * c), int(bg[i,j][2] * c), int(bg[i,j][3] * c)], dt=ti.u8)
             for k in range(constants.NUMBER_OF_PHEROMONES):
                 if k != 0 :
                     col = self.choose_color(col, ti.Vector([0, 0,ti.u8(self.grid[i, j, k] * 255), 0], dt=ti.u8))

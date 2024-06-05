@@ -30,3 +30,5 @@ colors = {"fourmis": "#FF0000",
 DEFAULT_PAINT_SIZE: int = 20
 
 HOME_ZOOM_FACTOR: int = 2
+
+BG_BRIGHTNESS: float = 0.2
