@@ -427,8 +427,23 @@ class Display_param(tk.Toplevel):
             elif "TURN_SPEED" in line:
                 f.write(f'TURN_SPEED: float = {self.TURN_SPEED}  * 3.14 / 180\n')
             elif "MOVE_SPEED" in line:
-                print(self.MOVE_SPEED)
                 f.write(f'MOVE_SPEED: int = {self.MOVE_SPEED}\n')
+            elif "RANDOM_FACT" in line:
+                f.write(f' RANDOM_FACT: int = {self.RANDOM_FACT}\n')
+            elif "DECAY_RATE" in line:
+                f.write(f'DECAY_RATE: float = {self.DECAY_RATE}\n')
+            elif "SPREAD_RATE" in line:
+                f.write(f'SPREAD_RATE: int = {self.SPREAD_RATE}\n')
+            elif "HOME_SIZE" in line:
+                f.write(f'HOME_SIZE: int = {self.HOME_SIZE}\n')
+            elif "FOOD_SIZE" in line:
+                f.write(f'FOOD_SIZE: int = {self.FOOD_SIZE}\n')
+            elif "FOOD_COUNT" in line:
+                f.write(f'FOOD_COUNT: int = {self.FOOD_COUNT}\n')
+            elif "NUMBER_OF_PHEROMONES" in line:
+                f.write(f'NUMBER_OF_PHEROMONES: int = {self.NUMBER_PHEROMONES}\n')
+            elif "LOST_SPEED" in line:
+                f.write(f'LOST_SPEED: float = {self.LOST_SPEED}\n')
             else:
                 f.write(line)
 
