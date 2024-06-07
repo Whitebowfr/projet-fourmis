@@ -24,17 +24,16 @@ class Paint() :
                 self.paint(mouse, True)
             elif self.window.is_pressed(self.save) :
                 ti.tools.imwrite(self.image, "./saved_images/paint.png")
-                self.window.running = False
             else :
                 mouse = ti.Vector([0.0, 0.0])
 
-            if self.window.running:
-                self.window.show()
-                self.prev_pos = mouse
+            self.window.show()
+            self.prev_pos = mouse
+            ti.sync()
 
     @ti.kernel
     def paint(self, pos: ti.template(), erase: bool) :
-        if self.prev_pos.norm() > 0 :
+        if self.prev_pos.norm() > 1.0 :
             vect_diff = pos - self.prev_pos
             for i in range(int(ti.round(vect_diff.norm()))) :
                 self.fill_circle(ti.cast(self.prev_pos + vect_diff.normalized() * i, ti.i32), erase)
@@ -47,11 +46,16 @@ class Paint() :
         for i in range(-size, size) :
             for j in range(-size, size) :
                 if ti.Vector([i, j]).norm() <= self.brush_size.value :
-                    col = ti.Vector([0.0, 1.0, 0.0])
+                    if self.is_in_window(pos + (i,j)) :
+                        col = ti.Vector([0.0, 1.0, 0.0])
 
-                    if erase :
-                        col = ti.Vector([0.0, 0.0, 0.0])
-                    self.image[pos + (i, j)] = col
+                        if erase :
+                            col = ti.Vector([0.0, 0.0, 0.0])
+                        self.image[pos + (i, j)] = col
+
+    @ti.func
+    def is_in_window(self, vect: ti.template()) :
+        return vect[0] >= 0 and vect[0] < self.size[0] and vect[1] >= 0 and vect[1] < self.size[1]
 
 if __name__ == "__main__" :
     ti.init(arch=ti.vulkan)

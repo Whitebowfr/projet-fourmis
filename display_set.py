@@ -3,6 +3,9 @@ from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 import numpy as np
 import csv
+import random
+
+
 import constants as c
 
 class Display_param(tk.Toplevel):
@@ -10,7 +13,7 @@ class Display_param(tk.Toplevel):
     def __init__(self):
         super().__init__()
         self.title("Paramétrage de la fourmi")
-        self.geometry("1200x640")
+        self.geometry("1250x640")
         self.resizable(height = False, width = False)
     
         self.img_fourmi = tk.PhotoImage(file="fourmi.png")
@@ -90,12 +93,6 @@ class Display_param(tk.Toplevel):
         self.random_fact = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 0, to = 15, resolution = 1, tickinterval=3, label='Valeur RANDOM FACT', variable= self.val_random_fact)                 
         self.random_fact.pack(side ='bottom', fill = 'x')
 
-        # choix entre 1 et 2
-        """ self.val_number_pher = tk.DoubleVar()
-        self.val_number_pher.set(10)
-        self.number_pher = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 5, to = 100, resolution = 1, tickinterval=19, label='Valeur NUMBER OF PHEROMONES', variable= self.val_number_pher)                 
-        self.number_pher.pack(side ='bottom', fill = 'x') """
-
         self.val_food_count = tk.DoubleVar()
         self.val_food_count.set(12)
         self.food_count = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 1, to = 10, resolution = 1, tickinterval=2, label='Valeur FOOD COUNT', variable= self.val_food_count)                 
@@ -172,11 +169,10 @@ class Display_param(tk.Toplevel):
         self.MOVE_SPEED = int(self.val_mv_spd.get())
         self.LOST_SPEED = float(self.val_lost_spd.get())
         self.DECAY_RATE = float(self.val_decay_rate.get())
-        self.SPREAD_RATE = int(self.val_spread_rate.get())
+        self.SPREAD_RATE = float(self.val_spread_rate.get())
         self.HOME_SIZE = int(self.val_home_size.get())
         self.FOOD_SIZE = int(self.val_food_size.get())
         self.FOOD_COUNT = int(self.val_food_count.get())
-        # self.NUMBER_PHER = int(self.val_number_pher.get())
         self.RANDOM_FACT = int(self.val_random_fact.get())
         new_list = [self.SENSOR_OFFSET_DISTANCE, self.SENSOR_SIZE, self.SENSOR_ANGLE_DEGREES, self.TURN_SPEED, self.MOVE_SPEED, self.LOST_SPEED, self.DECAY_RATE, self.SPREAD_RATE, self.HOME_SIZE, self.FOOD_SIZE, self.FOOD_COUNT, self.RANDOM_FACT]
         if self.list_param:
@@ -210,21 +206,33 @@ class Display_param(tk.Toplevel):
 
         self.canevas.create_image([1300, 100], image=self.img_fourmi2)
 
-        self.decay_rect = self.canevas.create_rectangle(1195, 95, 1205, 105, fill='red', state='normal')
+        self.decay_rect = self.canevas.create_rectangle(1215, 95, 1225, 105, fill='white', state='normal')
         self.decay_dis = True
         self.blink() 
         
         self.list_rect_spread = [[0 for i in range(9)] for j in range(9)]
+        self.spread_val = -1
         self.spread_blink() 
         for y in range(len(self.area_spread)):
             for x in range(len(self.area_spread[0])):
                 self.rect_spread = self.canevas.create_rectangle(1100+10*x , 55+10*y, 1100+10*(x+1), 55+10*(y+1), fill=self.color(self.area_spread[y][x]))
                 self.list_rect_spread[y][x]=self.rect_spread 
 
+        self.list_oval_foods = [[None for j in range(5)] for i in range(2)]
+        for y in range(2):
+            for x in range(5):
+                self.oval_food = self.canevas.create_oval(1100+100*x , 250+70*y, 1100+100*(x+1)-50, 250+70*(y+1)-20, fill='green', state='hidden')
+                self.list_oval_foods[y][x]=self.oval_food 
+        self.display_foods()
+
+        self.rect_random = self.canevas.create_rectangle(811, 499, 1588, 526, width='2', outline='black')
+        self.oval_random = self.canevas.create_oval(1187, 500, 1212, 525, fill='white')
+
+        self.display_random()
 
     def refresh(self):
         list_chgt = self.recover()
-
+    
         if 0 in list_chgt or 1 in list_chgt or 2 in list_chgt: 
             self.canevas.itemconfigure(self.id_arc_av, extent=self.SENSOR_SIZE, start=-int(self.SENSOR_SIZE/2))
             self.canevas.itemconfigure(self.id_arc_g, extent=self.SENSOR_SIZE, start=self.SENSOR_ANGLE_DEGREES-int(self.SENSOR_SIZE/2))
@@ -245,9 +253,25 @@ class Display_param(tk.Toplevel):
         if 9 in list_chgt:
             self.canevas.coords(self.food, 950-self.FOOD_SIZE, 310-self.FOOD_SIZE,950+self.FOOD_SIZE, 310+self.FOOD_SIZE)
             self.canevas.itemconfigure(self.txt_food,  font='Times '+str(int(self.FOOD_SIZE/2))+' bold')
-        
+        if 10 in list_chgt:
+            self.display_foods()
+        self.display_random()
         
         self.after(100, self.refresh)
+
+    def display_random(self):
+        place = random.randint(-self.RANDOM_FACT, self.RANDOM_FACT)
+        self.canevas.coords(self.oval_random, 1187+place*25, 500, 1212+place*25, 525)
+
+    def display_foods(self):
+        for i in range(10):
+            x = i%5
+            y = i//5
+            if i < self.FOOD_COUNT:
+                self.canevas.itemconfigure(self.list_oval_foods[y][x], state='normal')
+            else:
+                self.canevas.itemconfigure(self.list_oval_foods[y][x], state='hidden')
+
 
     def blink(self):
         if self.decay_dis :
@@ -261,30 +285,35 @@ class Display_param(tk.Toplevel):
     def color(self, value):
         color_hexa='#'
         value = int(value*128+127)
+        value = min(value, 255)
         hexa = str(hex(value))[2:]
         if len(hexa)==1:
             hexa='0'+hexa
         color_hexa+=hexa*3
         return color_hexa
 
-    def spread_blink(self, i=-1):
+    def spread_blink(self):
+        self.recover()
+        i = self.spread_val
+        self.area_spread_save = [[0 for i in range(9)] for j in range(9)]
         if i<5 and i>=0: 
             for y in range(1, 8):
                 for x in range(1, 8):
                     if self.area_spread[y][x]!=0:
-                        value_spread = self.area_spread[y][x]/5
-                        self.area_spread[y][x]=value_spread
-                        self.area_spread[y][x-1]+=value_spread
-                        self.area_spread[y][x+1]+=value_spread
-                        self.area_spread[y-1][x]+=value_spread
-                        self.area_spread[y+1][x]+=value_spread
-            self.display_spread()
+                        value_spread = self.area_spread[y][x]/2.5
+                        self.area_spread_save[y][x]+=value_spread
+                        self.area_spread_save[y][x-1]+=value_spread
+                        self.area_spread_save[y][x+1]+=value_spread
+                        self.area_spread_save[y-1][x]+=value_spread
+                        self.area_spread_save[y+1][x]+=value_spread
+            self.area_spread = self.area_spread_save
+            self.spread_val+=1
         else:
-            i=-1
+            self.spread_val=0
             self.area_spread = [[0 for i in range(9)] for j in range(9)]
             self.area_spread[4][4] = 1
-            self.display_spread()
-        self.after(int(1000*self.SPREAD_RATE), self.spread_blink, i+1)
+        self.display_spread()
+        self.after(int(1000*self.SPREAD_RATE), self.spread_blink)
 
     def display_spread(self):
         for y in range(len(self.area_spread)):
@@ -349,9 +378,6 @@ class Display_param(tk.Toplevel):
         if self.f_path == None:
             self.label_message.config(text = "Veuillez choisir un fichier", fg='red')
             return
-        
-
-
 
         with open(self.f_path, newline='') as csvfile:
             reader = csv.reader(csvfile)
@@ -361,7 +387,6 @@ class Display_param(tk.Toplevel):
 
                 if row[0] == self.menu_deroulant.get():
                     liste = row
-
 
         self.val_sens_offset_dist.set(liste[1])
         self.val_sens_size.set(liste[2])
@@ -406,8 +431,6 @@ class Display_param(tk.Toplevel):
             writer = csv.writer(csvfile)
             for row in new_csv:
                 writer.writerow(row)
-        self.display_canvas()
-        self.refresh()
 
         return value,index
 
@@ -445,9 +468,18 @@ class Display_param(tk.Toplevel):
             else:
                 f.write(line)
 
+<<<<<<< HEAD
         print(f'offset : {c.SENSOR_OFFSET_DISTANCE}, size : {c.SENSOR_SIZE}, angle : {c.SENSOR_ANGLE_RAD}, turn : {c.TURN_SPEED}, move : {c.MOVE_SPEED}')
+=======
+        c.SENSOR_OFFSET_DISTANCE = self.SENSOR_OFFSET_DISTANCE
+        c.SENSOR_SIZE = self.SENSOR_SIZE
+        c.SENSOR_ANGLE_RAD = self.SENSOR_ANGLE_DEGREES * 3.14 / 180
+        c.TURN_SPEED = self.TURN_SPEED
+        c.MOVE_SPEED = self.MOVE_SPEED
+>>>>>>> b19e579ad1ee9101b9d65c5b4b5ef5e702af2acf
 
         self.end(event)
+
     def chose_file(self,event):
         self.f_path = askopenfilename(initialdir="./",title="Select File", filetypes=(("CSV files","*.csv*"),("All Files","*.*")))
         if self.f_path == "":
@@ -469,8 +501,6 @@ class Display_param(tk.Toplevel):
         self.menu_deroulant.config(values=liste)
         if len(liste) != 0:
             self.menu_deroulant.current(0)
-        self.display_canvas()
-        self.refresh()
 
 if __name__ == "__main__":
     app = Display_param()
