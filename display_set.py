@@ -93,12 +93,6 @@ class Display_param(tk.Toplevel):
         self.random_fact = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 0, to = 15, resolution = 1, tickinterval=3, label='Valeur RANDOM FACT', variable= self.val_random_fact)                 
         self.random_fact.pack(side ='bottom', fill = 'x')
 
-        # choix entre 1 et 2
-        """ self.val_number_pher = tk.DoubleVar()
-        self.val_number_pher.set(10)
-        self.number_pher = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 5, to = 100, resolution = 1, tickinterval=19, label='Valeur NUMBER OF PHEROMONES', variable= self.val_number_pher)                 
-        self.number_pher.pack(side ='bottom', fill = 'x') """
-
         self.val_food_count = tk.DoubleVar()
         self.val_food_count.set(12)
         self.food_count = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 1, to = 10, resolution = 1, tickinterval=2, label='Valeur FOOD COUNT', variable= self.val_food_count)                 
@@ -175,11 +169,10 @@ class Display_param(tk.Toplevel):
         self.MOVE_SPEED = int(self.val_mv_spd.get())
         self.LOST_SPEED = float(self.val_lost_spd.get())
         self.DECAY_RATE = float(self.val_decay_rate.get())
-        self.SPREAD_RATE = int(self.val_spread_rate.get())
+        self.SPREAD_RATE = float(self.val_spread_rate.get())
         self.HOME_SIZE = int(self.val_home_size.get())
         self.FOOD_SIZE = int(self.val_food_size.get())
         self.FOOD_COUNT = int(self.val_food_count.get())
-        # self.NUMBER_PHER = int(self.val_number_pher.get())
         self.RANDOM_FACT = int(self.val_random_fact.get())
         new_list = [self.SENSOR_OFFSET_DISTANCE, self.SENSOR_SIZE, self.SENSOR_ANGLE_DEGREES, self.TURN_SPEED, self.MOVE_SPEED, self.LOST_SPEED, self.DECAY_RATE, self.SPREAD_RATE, self.HOME_SIZE, self.FOOD_SIZE, self.FOOD_COUNT, self.RANDOM_FACT]
         if self.list_param:
@@ -361,7 +354,7 @@ class Display_param(tk.Toplevel):
     def end(self, event):
         self.recover()
         print(f'offset : {self.SENSOR_OFFSET_DISTANCE}, size : {self.SENSOR_SIZE}, angle : {self.SENSOR_ANGLE_DEGREES}, turn : {self.TURN_SPEED}, move : {self.MOVE_SPEED}, lost : {self.LOST_SPEED}')
-        self.quit()
+        self.destroy()
 
     def parameter_save(self,event):
         name = self.texte.get()
@@ -459,7 +452,7 @@ class Display_param(tk.Toplevel):
             elif "MOVE_SPEED" in line:
                 f.write(f'MOVE_SPEED: int = {self.MOVE_SPEED}\n')
             elif "RANDOM_FACT" in line:
-                f.write(f' RANDOM_FACT: int = {self.RANDOM_FACT}\n')
+                f.write(f'RANDOM_FACT: int = {self.RANDOM_FACT}\n')
             elif "DECAY_RATE" in line:
                 f.write(f'DECAY_RATE: float = {self.DECAY_RATE}\n')
             elif "SPREAD_RATE" in line:
@@ -470,20 +463,11 @@ class Display_param(tk.Toplevel):
                 f.write(f'FOOD_SIZE: int = {self.FOOD_SIZE}\n')
             elif "FOOD_COUNT" in line:
                 f.write(f'FOOD_COUNT: int = {self.FOOD_COUNT}\n')
-            elif "NUMBER_OF_PHEROMONES" in line:
-                f.write(f'NUMBER_OF_PHEROMONES: int = {self.NUMBER_PHEROMONES}\n')
             elif "LOST_SPEED" in line:
                 f.write(f'LOST_SPEED: float = {self.LOST_SPEED}\n')
             else:
                 f.write(line)
-
-        c.SENSOR_OFFSET_DISTANCE = self.SENSOR_OFFSET_DISTANCE
-        c.SENSOR_SIZE = self.SENSOR_SIZE
-        c.SENSOR_ANGLE_RAD = self.SENSOR_ANGLE_DEGREES * 3.14 / 180
-        c.TURN_SPEED = self.TURN_SPEED
-        c.MOVE_SPEED = self.MOVE_SPEED
-        # print(f'offset : {c.SENSOR_OFFSET_DISTANCE}, size : {c.SENSOR_SIZE}, angle : {c.SENSOR_ANGLE_RAD}, turn : {c.TURN_SPEED}, move : {c.MOVE_SPEED}')
-
+        f.close()
         self.end(event)
 
     def chose_file(self,event):
