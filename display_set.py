@@ -354,7 +354,7 @@ class Display_param(tk.Toplevel):
     def end(self, event):
         self.recover()
         print(f'offset : {self.SENSOR_OFFSET_DISTANCE}, size : {self.SENSOR_SIZE}, angle : {self.SENSOR_ANGLE_DEGREES}, turn : {self.TURN_SPEED}, move : {self.MOVE_SPEED}, lost : {self.LOST_SPEED}')
-        self.quit()
+        self.destroy()
 
     def parameter_save(self,event):
         name = self.texte.get()
