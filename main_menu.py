@@ -3,7 +3,7 @@ from paint_taichi import Paint
 from simulation import FourmiSim
 import taichi as ti
 
-from display_set import Display_param
+from display_set import Display_set
 
 ti.init(arch=ti.vulkan)
 
@@ -32,7 +32,7 @@ class MainMenu(tk.Tk):
         FourmiSim(700, 700, 1000).run()
 
     def button2_action(self):
-        Display_param().mainloop()
+        Display_set().mainloop()
 
     def button3_action(self):
         Paint(700,700).run()
