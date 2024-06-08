@@ -486,6 +486,7 @@ class Display_set(tk.Toplevel):
         """
         self.recover()
         self.quit()
+        self.destroy()
 
     def parameter_save(self,event):
         name = self.texte.get()
@@ -582,6 +583,7 @@ class Display_set(tk.Toplevel):
                 f.write(f'MOVE_SPEED: int = {self.MOVE_SPEED}\n')
             elif "RANDOM_FACT" in line:
                 f.write(f'RANDOM_FACT: int = {self.RANDOM_FACT}\n')
+        
             elif "DECAY_RATE" in line:
                 f.write(f'DECAY_RATE: float = {self.DECAY_RATE}\n')
             elif "SPREAD_RATE" in line:

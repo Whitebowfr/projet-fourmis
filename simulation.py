@@ -37,13 +37,14 @@ class FourmiSim:
         self.previous_update = time.time()
         while self.display.gui.running:
             self.update_game()
+            ti.sync()
 
     def runStep(self):
         self.update_game()
     
 
 if __name__ == "__main__":
-    ti.init()
+    ti.init(arch=ti.vulkan)
     sim = FourmiSim(700, 700, 2000)
     sim.run()
             
