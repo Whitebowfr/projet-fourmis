@@ -452,7 +452,7 @@ class Display_param(tk.Toplevel):
             elif "MOVE_SPEED" in line:
                 f.write(f'MOVE_SPEED: int = {self.MOVE_SPEED}\n')
             elif "RANDOM_FACT" in line:
-                f.write(f' RANDOM_FACT: int = {self.RANDOM_FACT}\n')
+                f.write(f'RANDOM_FACT: int = {self.RANDOM_FACT}\n')
             elif "DECAY_RATE" in line:
                 f.write(f'DECAY_RATE: float = {self.DECAY_RATE}\n')
             elif "SPREAD_RATE" in line:
@@ -467,17 +467,7 @@ class Display_param(tk.Toplevel):
                 f.write(f'LOST_SPEED: float = {self.LOST_SPEED}\n')
             else:
                 f.write(line)
-
-<<<<<<< HEAD
-        print(f'offset : {c.SENSOR_OFFSET_DISTANCE}, size : {c.SENSOR_SIZE}, angle : {c.SENSOR_ANGLE_RAD}, turn : {c.TURN_SPEED}, move : {c.MOVE_SPEED}')
-=======
-        c.SENSOR_OFFSET_DISTANCE = self.SENSOR_OFFSET_DISTANCE
-        c.SENSOR_SIZE = self.SENSOR_SIZE
-        c.SENSOR_ANGLE_RAD = self.SENSOR_ANGLE_DEGREES * 3.14 / 180
-        c.TURN_SPEED = self.TURN_SPEED
-        c.MOVE_SPEED = self.MOVE_SPEED
->>>>>>> b19e579ad1ee9101b9d65c5b4b5ef5e702af2acf
-
+        f.close()
         self.end(event)
 
     def chose_file(self,event):
