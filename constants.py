@@ -17,7 +17,7 @@ HOME_SIZE: int = 20
 FOOD_SIZE: int = 20
 FOOD_COUNT: int = 20
 
-BG_BRIGHTNESS = 0.5
+BG_BRIGHTNESS:float = 0.5
 
 HIDE_MARKERS: bool = False
 
@@ -30,5 +30,4 @@ DEFAULT_PAINT_SIZE: int = 20
 
 HOME_ZOOM_FACTOR: int = 1
 
-BG_BRIGHTNESS: float = 0.2
 
