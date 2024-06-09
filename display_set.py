@@ -121,7 +121,7 @@ class Display_set(tk.Toplevel):
         self.random_fact.pack(side ='bottom', fill = 'x')
 
         self.val_food_count = tk.DoubleVar()
-        self.val_food_count.set(12)
+        self.val_food_count.set(10)
         self.food_count = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 1, to = 10, resolution = 1, tickinterval=2, label='Valeur FOOD COUNT', variable= self.val_food_count)                 
         self.food_count.pack(side ='bottom', fill = 'x')
 
@@ -131,12 +131,12 @@ class Display_set(tk.Toplevel):
         self.food_size.pack(side ='bottom', fill = 'x')
 
         self.val_home_size = tk.DoubleVar()
-        self.val_home_size.set(10)
+        self.val_home_size.set(30)
         self.home_size = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 5, to = 100, resolution = 1, tickinterval=19, label='Valeur HOME SIZE', variable= self.val_home_size)                 
         self.home_size.pack(side ='bottom', fill = 'x')
 
         self.val_spread_rate = tk.DoubleVar()
-        self.val_spread_rate.set(1)
+        self.val_spread_rate.set(10)
         self.spread_rate = tk.Scale(self.left_zone2, length=400, orient = 'horizontal', from_= 0, to = 10, resolution = 0.1, tickinterval=2, label='Valeur SPREAD RATE', variable= self.val_spread_rate)                 
         self.spread_rate.pack(side ='bottom', fill = 'x')
 
@@ -280,7 +280,7 @@ class Display_set(tk.Toplevel):
         self.canevas.create_text(950, 450, text='Choix des couleurs : ', font='Times 25 bold')
 
         i = 0
-        for form in self.COLORS.keys():
+        for form in self.COLORS.keys(): # On crée les rectangles de choix des couleurs
             if form != "pheromones":
                 id = self.canevas.create_rectangle(1100+i*80, 425, 1150+i*80, 475, fill=self.COLORS[form])
                 self.canevas.tag_bind(id, '<Button-1>', self.change_color)
@@ -305,29 +305,29 @@ class Display_set(tk.Toplevel):
         """
         list_chgt = self.recover()
     
-        if 0 in list_chgt or 1 in list_chgt or 2 in list_chgt: 
+        if 0 in list_chgt or 1 in list_chgt or 2 in list_chgt: # Changements relatifs à l'affichage des capteurs
             self.canevas.itemconfigure(self.id_arc_av, extent=self.SENSOR_SIZE, start=-int(self.SENSOR_SIZE/2))
             self.canevas.itemconfigure(self.id_arc_g, extent=self.SENSOR_SIZE, start=self.SENSOR_ANGLE_DEGREES-int(self.SENSOR_SIZE/2))
             self.canevas.itemconfigure(self.id_arc_d, extent=-self.SENSOR_SIZE, start=-self.SENSOR_ANGLE_DEGREES+int(self.SENSOR_SIZE/2))
             self.canevas.coords(self.id_arc_av, 550-self.SENSOR_SIZE+self.SENSOR_OFFSET_DISTANCE, 307-self.SENSOR_SIZE, 550+self.SENSOR_SIZE+self.SENSOR_OFFSET_DISTANCE, 307+self.SENSOR_SIZE)
             self.canevas.coords(self.id_arc_g, 550-self.SENSOR_SIZE+int(self.SENSOR_OFFSET_DISTANCE*np.cos(np.pi*self.SENSOR_ANGLE_DEGREES/180)), 307-self.SENSOR_SIZE-self.SENSOR_OFFSET_DISTANCE-int(self.SENSOR_OFFSET_DISTANCE*np.sin(np.pi*self.SENSOR_ANGLE_DEGREES/180)), 550+self.SENSOR_SIZE+int(self.SENSOR_OFFSET_DISTANCE*np.cos(np.pi*self.SENSOR_ANGLE_DEGREES/180)), 307+self.SENSOR_SIZE-self.SENSOR_OFFSET_DISTANCE-int(self.SENSOR_OFFSET_DISTANCE*np.sin(np.pi*self.SENSOR_ANGLE_DEGREES/180)))
             self.canevas.coords(self.id_arc_d, 550-self.SENSOR_SIZE+int(self.SENSOR_OFFSET_DISTANCE*np.cos(np.pi*self.SENSOR_ANGLE_DEGREES/180)), 307-self.SENSOR_SIZE+self.SENSOR_OFFSET_DISTANCE+int(self.SENSOR_OFFSET_DISTANCE*np.sin(np.pi*self.SENSOR_ANGLE_DEGREES/180)), 550+self.SENSOR_SIZE+int(self.SENSOR_OFFSET_DISTANCE*np.cos(np.pi*self.SENSOR_ANGLE_DEGREES/180)), 307+self.SENSOR_SIZE+self.SENSOR_OFFSET_DISTANCE+int(self.SENSOR_OFFSET_DISTANCE*np.sin(np.pi*self.SENSOR_ANGLE_DEGREES/180)))
-        if 3 in list_chgt :
+        if 3 in list_chgt : # Changement relatif à l'affichage de la flèche de vitesse en rotation
             self.canevas.coords(self.turn_arrow, 350-self.TURN_SPEED, 550, 350, 595, 350+self.TURN_SPEED, 550)
-        if 4 in list_chgt :
+        if 4 in list_chgt : # Changement relatif à l'affichage de la flèche de vitesse
             self.canevas.coords(self.mv_arrow, 350-self.MOVE_SPEED, 10, 350+self.MOVE_SPEED, 10)
-        if 5 in list_chgt:
+        if 5 in list_chgt: # Changement relatif à l'affichage de la vitesse lorsque la fourmi est perdu
             self.canevas.coords(self.lost_rect, 10, 400-200*self.LOST_SPEED, 30, 400)
             self.canevas.coords(self.cadre_lost_rect, 10, 200, 30, 400)
-        if 8 in list_chgt:
+        if 8 in list_chgt: # Changement relatif à l'affichage de la taille de la maison
             self.canevas.coords(self.home, 950-self.HOME_SIZE, 105-self.HOME_SIZE,950+self.HOME_SIZE, 105+self.HOME_SIZE)
             self.canevas.itemconfigure(self.txt_home,  font='Times '+str(int(self.HOME_SIZE/2))+' bold')
-        if 9 in list_chgt:
+        if 9 in list_chgt: # Changement relatif à l'affichage de la taille de la nourriture
             self.canevas.coords(self.food, 950-self.FOOD_SIZE, 310-self.FOOD_SIZE,950+self.FOOD_SIZE, 310+self.FOOD_SIZE)
             self.canevas.itemconfigure(self.txt_food,  font='Times '+str(int(self.FOOD_SIZE/2))+' bold')
-        if 10 in list_chgt:
+        if 10 in list_chgt: # Changement relatif à l'affichage du nombre de nourriture
             self.display_foods()
-        self.display_random()
+        self.display_random() # Affichage de la position random
         
         self.after(100, self.refresh)
 
@@ -381,14 +381,23 @@ class Display_set(tk.Toplevel):
 
         return color_hexa
 
-    def color_choice(self, event):
+    def color_choice(self):
+        """
+        Ouvre une fenêtre tkinter permettant de choisir une couleur en hexadécimal
+        Input : None
+        Output : color[1], string de la couleur choisie en héxadécimal
+        """
         color = colorchooser.askcolor(title="Choisissez une couleur")
         if color[1] is not None:
             return color[1]
 
     def change_color(self, event):
+        """
+        Méthode permettant de lancer la fenêtre de choix de couleur et faisant les modificatiosn de couleurs dans les paramètres
+        Input, output : None
+        """
         id_change = self.canevas.find_withtag('current')[0]
-        color = self.color_choice('<Button-1>')
+        color = self.color_choice()
         self.canevas.itemconfigure(id_change, fill=color)
         self.dico_color[id_change]['color']=color
         if 'pheromones' not in self.dico_color[id_change]['nom']:
@@ -414,7 +423,7 @@ class Display_set(tk.Toplevel):
         if i<5 and i>=0: 
             for y in range(1, 8):
                 for x in range(1, 8):
-                    if self.area_spread[y][x]!=0:
+                    if self.area_spread[y][x]!=0: # Calcule des intensité des phéromones
                         value_spread = self.area_spread[y][x]/2.5
                         self.area_spread_save[y][x]+=value_spread
                         self.area_spread_save[y][x-1]+=value_spread
@@ -548,8 +557,6 @@ class Display_set(tk.Toplevel):
         if len(liste) != 0:
             self.menu_deroulant.current(0)
         
-
-
         new_csv = []
         with open(self.f_path, 'r', newline='') as csvfile:
             reader = csv.reader(csvfile)
@@ -632,12 +639,6 @@ class Display_set(tk.Toplevel):
         self.menu_deroulant.config(values=liste)
         if len(liste) != 0:
             self.menu_deroulant.current(0)
-
-class Color_choice(tk.Tk):
-
-    def __init__(self):
-        pass
-
 
 if __name__ == "__main__":
     app = Display_set()
