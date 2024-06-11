@@ -571,6 +571,10 @@ class Display_set(tk.Toplevel):
         return value,index
 
     def verr_param(self,event):
+        """
+        Verrouille les parmètres et les stocke dans le fichier constante
+        Input, outout : None
+        """
         f = open("constants.py", "r")
         lines = f.readlines()
         f.close()
