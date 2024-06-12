@@ -26,3 +26,10 @@ Après ouverture du menu, vous avez 3 options :
 ## Algorithmie
 Ce projet déploie de nombreux algorithmes complexes pour améliorer le comportement de base des fourmis, pour l'affiche et autres.
 Le projet était, à la base, prévu entièrement sur tkinter. En revanche, dû à la faible vitesse d'actualisation des canvas en les adressant pixels à pixels et même la lenteur de la simulation, cette idée a étée abandonnée. Nous nous sommes mis à la recherche d'alternatives, et nous avons trouvé un projet nommé [taichi-lang](https://www.taichi-lang.org/). Ce projet, né du MIT, permet de paralléliser des calculs sur les carte graphique. Il requiert en revanche beaucoup d'apprentissage, mais permet d'obtenir plusieurs centaines d'images par seconde, à comparer avec les 17 secondes par image de la version tkinter.
+
+## Implication
+
+- Adam GUGLIELMINO: 35 %
+- Enzo RIVIERE : 15 %
+- Clémentin GRANIER : 35 %
+- Louis CHARDIN : 15 %
