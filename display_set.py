@@ -494,10 +494,13 @@ class Display_set(tk.Toplevel):
         Input, output : None
         """
         self.recover()
-        self.quit()
         self.destroy()
 
     def parameter_save(self,event):
+        """
+        Sauvegarde des paramètres dans un fichier csv
+        Input, output : None
+        """
         name = self.texte.get()
         if name == "Nom de la configuration à enregistrer" or name == "":
             self.label_message.config(text = "Veuillez entrer un nom de configuration", fg='red')
@@ -515,6 +518,10 @@ class Display_set(tk.Toplevel):
         self.label_message.config(text = "Configuration enregistrée", fg='green')
     
     def change_value(self, event):
+        """
+        Changement des valeurs des curseurs en fonction de la configuration sélectionnée
+        Input, output : None
+        """
         if self.f_path == None:
             self.label_message.config(text = "Veuillez choisir un fichier", fg='red')
             return
@@ -542,6 +549,10 @@ class Display_set(tk.Toplevel):
         self.val_random_fact.set(liste[12])
 
     def supprimer_param(self,event):
+        """
+        Suppression de la configuration sélectionnée dans le menu déroulant
+        Input, output : None
+        """
         liste = self.menu_deroulant["values"]
         if len(liste) == 0:
             self.label_message.config(text = "Aucune configuration à supprimer", fg='red')
@@ -613,16 +624,14 @@ class Display_set(tk.Toplevel):
                 f.write(line)
 
         f.close()
-         
-        c.SENSOR_OFFSET_DISTANCE = self.SENSOR_OFFSET_DISTANCE
-        c.SENSOR_SIZE = self.SENSOR_SIZE
-        c.SENSOR_ANGLE_RAD = self.SENSOR_ANGLE_DEGREES * 3.14 / 180
-        c.TURN_SPEED = self.TURN_SPEED
-        c.MOVE_SPEED = self.MOVE_SPEED
-         
         self.end(event)
 
     def chose_file(self,event):
+        """
+        Ouvre une fenêtre de choix de fichier et stocke le chemin du fichier choisi
+        Input, output : None
+        """
+
         self.f_path = askopenfilename(initialdir="./",title="Select File", filetypes=(("CSV files","*.csv*"),("All Files","*.*")))
         if self.f_path == "":
             self.label_message.config(text = "Veuillez choisir un fichier", fg='red')
@@ -632,6 +641,11 @@ class Display_set(tk.Toplevel):
         self.refresh_menu_deroulant(event)
 
     def refresh_menu_deroulant(self,event):
+        """
+        Rafraichissement du menu déroulant avec les configurations du fichier choisi
+        Input, output : None
+        """
+        
         if self.f_path == None:
             self.label_message.config(text = "Veuillez choisir un fichier", fg='red')
             return
